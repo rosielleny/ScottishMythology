@@ -8,12 +8,12 @@
 		<version>2.7.14</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.story</groupId>
-	<artifactId>Story</artifactId>
+	<groupId>com.location</groupId>
+	<artifactId>Location</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
-	<name>Story</name>
-	<description>Story microservice for Scottish mythology.</description>
+	<name>Location</name>
+	<description>Location microservice for Scottish mythology.</description>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
