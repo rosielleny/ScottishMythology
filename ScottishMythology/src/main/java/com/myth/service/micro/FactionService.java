@@ -1,8 +1,8 @@
-package com.faction.service;
+package com.myth.service.micro;
 
 import java.util.List;
 
-import com.faction.entity.Faction;
+import com.myth.entity.Faction;
 
 public interface FactionService {
 	
