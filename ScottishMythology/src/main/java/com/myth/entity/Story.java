@@ -19,14 +19,14 @@ public class Story {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int storyPK;
 	private String storyName;
-	private Story storyDescription;
+	private String storyDescription;
 	
 	
 	public Story() {
 		
 	}
 	
-	public Story(int storyPK, String storyName, Story storyDescription) {
+	public Story(int storyPK, String storyName, String storyDescription) {
 		super();
 		this.storyPK = storyPK;
 		this.storyName = storyName;
@@ -46,11 +46,11 @@ public class Story {
 		this.storyName = storyName;
 	}
 
-	public Story getStoryDescription() {
+	public String getStoryDescription() {
 		return storyDescription;
 	}
 
-	public void setStoryDescription(Story storyDescription) {
+	public void setStoryDescription(String storyDescription) {
 		this.storyDescription = storyDescription;
 	}
 

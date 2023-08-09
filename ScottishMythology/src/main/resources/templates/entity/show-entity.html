@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="https://thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Tava</title>
+<!-- <link th:href="@{/main.css}" rel="stylesheet"> -->
+</head>
+<body>
+	<header>Tava</header>
+    <form th:action="@{${entitySearchPath}}" method="get">
+        <input type="text" name="name" placeholder="Search by Name">
+        <button type="submit">Search</button>
+    </form>
+    <!-- Check if message is present -->
+	<p th:if="${message}" th:text="${message}"></p>
+
+	<!-- Otherwise show entity -->  
+	<table border="1" th:if="${entity != null}">
+		<tr>
+			<th>Key</th>
+			<th>Name</th>
+            <th th:if="${entity.hasDescription()}">Description</th>
+		</tr>
+			<tr th:if="${entity != null}">
+			<td th:text="${entity.entityPK}"></td>
+            <td th:text="${entity.entityName}"></td>
+            <td th:if="${entity.hasDescription()}" th:text="${entity.entityDescription}"></td>
+            <td>
+				<a th:href="@{${editEntityPath}(pk=${entity.entityPK})}" th:text="'Edit'"></a>
+			</td>
+			<td>
+				<a th:href="@{${deleteEntityPath}(pk=${entity.entityPK})}" th:text="'Delete'"></a>
+			</td>
+		</tr>
+	</table>
+	<br>
+	<br>
+	<a href="/">Home</a>
+	<br>
+	<br>
+	
+
+</body>
+</html>

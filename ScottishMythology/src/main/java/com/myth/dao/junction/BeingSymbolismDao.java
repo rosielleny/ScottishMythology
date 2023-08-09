@@ -15,9 +15,9 @@ import com.myth.entity.junction.KeyBeingSymbolism;
 public interface BeingSymbolismDao extends JpaRepository<BeingSymbolism, KeyBeingSymbolism>{
 
 	
-	@Query("FROM BeingSymbol WHERE beingPK = :beingPK")
+	@Query("FROM BeingSymbolism WHERE beingPK = :beingPK")
     List<BeingSymbolism> findByBeing(@Param("beingPK") int beingPK);
-	@Query("FROM BeingSymbol WHERE symbolPK = :symbolPK")
+	@Query("FROM BeingSymbolism WHERE symbolPK = :symbolPK")
     List<BeingSymbolism> findBySymbol(@Param("symbolPK") int symbolPK);
 	
 }

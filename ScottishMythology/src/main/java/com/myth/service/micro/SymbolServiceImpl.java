@@ -21,7 +21,7 @@ public class SymbolServiceImpl implements SymbolService {
 	@Autowired
 	private RestTemplate restTemplate;
 	@Autowired
-	HttpHeaders headers;
+	private HttpHeaders headers;
 
 	@Override
 	public Symbol createSymbol(Symbol symbol) {

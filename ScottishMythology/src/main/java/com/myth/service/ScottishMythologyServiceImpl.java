@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.myth.entity.*;
 import com.myth.entity.composite.BeingComposite;
@@ -495,5 +496,13 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 
 		return allLocationsCreatedSuccessfully;
 
+	}
+	
+	public ModelAndView setUpLinks(String entity) {
+		
+		ModelAndView modelAndView = new ModelAndView();
+		
+		
+		return modelAndView;
 	}
 }

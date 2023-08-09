@@ -21,7 +21,7 @@ public class AbilityServiceImpl implements AbilityService {
 	@Autowired
 	private RestTemplate restTemplate;
 	@Autowired
-	HttpHeaders headers;
+	private HttpHeaders headers;
 
 	@Override
 	public Ability createAbility(Ability ability) {

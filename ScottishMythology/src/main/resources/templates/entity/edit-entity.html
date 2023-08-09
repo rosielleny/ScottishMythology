@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Tava</title>
+</head>
+<body>
+    <header>Tava</header>
+	<form th:object="${entity}" th:action="@{${entityPath}}" method="post">
+		
+		<label th:text="${#request.getAttribute('label')}">Label Text:</label>
+		<input type="text" th:field="*{entityName}" id="entityNameInput">
+		<div id="message"></div>
+		<span id="nameValidationError" th:if="${#fields.hasErrors('entityName')}" th:errors="*{entityName}">Cannot be blank</span>
+		
+		<!-- The below will only show if the entity has the description field -->
+		<div th:if="${entity.hasDescription()}">
+			<label>
+				Description:
+				<textarea th:field="*{entityDescription}" id="description" maxlength="255" rows="5" cols="40" wrap="soft" required></textarea>
+			</label>
+		</div>
+		
+		<div id="error"></div>
+		
+		<button type="submit" id="createButton">Save</button>
+	</form>
+
+	<br>
+	<br>
+	<a href="/">Home</a>
+	<br>
+	<br>
+
+<script th:inline="javascript">
+
+/*<![CDATA[*/
+
+var entities = /*[[${entities}]]*/ [];
+
+/*]]>*/
+
+const input = document.getElementById('entityNameInput');
+const submitBtn = document.getElementById('createButton');
+
+input.addEventListener('input', function() {
+
+  const name = this.value;
+  
+  if(entities.includes(name)) {
+	  
+    message.textContent = "Already exists.";
+    message.style.color = "red";
+    
+    submitBtn.disabled = true;
+  } else {
+    message.textContent = ""; 
+    submitBtn.disabled = false;
+  }
+
+});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Tava</title>
+   <!-- <link th:href="@{/main.css}" rel="stylesheet"> -->
+</head>
+<body>
+    <header>Tava</header>
+    
+    <form th:action="@{${entitySearchPath}}" method="get">
+        <input type="text" name="name" placeholder="Search by Name">
+        <button type="submit">Search</button>
+    </form>
+    
+    <table border="1">
+        <tr>
+            <th>Key</th>
+            <th>Name</th>
+            <th th:if="${entityList[0].hasDescription()}">Description</th>
+        </tr>
+        <tr th:each="entity : ${entityList}">
+            <td th:text="${entity.entityPK}"></td>
+            <td th:text="${entity.entityName}"></td>
+            <td th:if="${entity.hasDescription()}" th:text="${entity.entityDescription}"></td>
+            <td>
+				<a th:href="@{${editEntityPath}(pk=${entity.entityPK})}" th:text="'Edit'"></a>
+			</td>
+			<td>
+				<a th:href="@{${deleteEntityPath}(pk=${entity.entityPK})}" th:text="'Delete'"></a>
+			</td>
+        </tr>
+    </table>
+    
+    <br>
+    <a href="/">Home</a>
+</body>
+</html>
