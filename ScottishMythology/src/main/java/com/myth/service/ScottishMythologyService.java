@@ -2,6 +2,8 @@ package com.myth.service;
 
 import java.util.List;
 
+import org.springframework.web.servlet.ModelAndView;
+
 import com.myth.entity.Being;
 import com.myth.entity.composite.BeingComposite;
 
@@ -20,6 +22,9 @@ public interface ScottishMythologyService {
 	
 	// Delete
 	Boolean deleteBeingRecord(int beingComposite);
+
+	// Links for controllers
+	ModelAndView setUpLinks(String entity, String entities, ModelAndView modelAndView);
 
 	
 

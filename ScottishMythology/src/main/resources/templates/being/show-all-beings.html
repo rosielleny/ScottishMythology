@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html xmlns:th="https://thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>Tava</title>
-<!-- <link th:href="@{/main.css}" rel="stylesheet"> -->
+    <meta charset="UTF-8">
+    <title>Tava</title>
+   <!-- <link th:href="@{/main.css}" rel="stylesheet"> -->
 </head>
 <body>
-	<header>Tava</header>
-				<nav>
+    <header>Tava</header>
+    			<nav>
   <ul>
     <li>
       <a href="/being/beings">Beings</a>
@@ -75,40 +75,64 @@
 
   </ul>
 </nav>
+    <dialog id="myModal">
+        <p id="popupMessage"></p>
+        <button id="okButton">OK</button>
+    </dialog>
+    <dialog id="yesNoModal">
+        <p id="yesNoMessage"></p>
+        <button id="noButton">No</button>
+        <button id="yesButton">Yes</button>
+    </dialog>
+
     <form th:action="@{${entitySearchPath}}" method="get">
         <input type="text" name="name" placeholder="Search by Name">
         <button type="submit">Search</button>
     </form>
-    <!-- Check if message is present -->
-	<p th:if="${message}" th:text="${message}"></p>
-
-	<!-- Otherwise show entity -->  
-	<table border="1" th:if="${entity != null}">
-		<tr>
-			<th>Key</th>
-			<th>Name</th>
-            <th th:if="${entity.hasDescription()}">Description</th>
-		</tr>
-			<tr th:if="${entity != null}">
-			<td th:text="${entity.entityPK}"></td>
-            <td th:text="${entity.entityName}"></td>
-            <td th:if="${entity.hasDescription()}" th:text="${entity.entityDescription}"></td>
+    
+    <table border="1">
+        <tr>
+            <th>Key</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Gender</th>
+            <th>Species</th>
+            <th>Faction</th>
+            <th>Abilities</th>
+            <th>Weaknesses</th>
+            <th>Symbolism</th>
+            <th>Locations</th>
+            <th>Stories</th>
+            
+        </tr>
+        <tr th:each="being : ${beingList}">
+            <td th:text="${being.beingPK}"></td>
+            <td th:text="${being.beingName}"></td>
+            <td th:text="${being.beingDescription}"></td>
+            <td th:text="${being.beingGender}"></td>
+            <td th:text="${being.beingSpecies}"></td>
+            <td th:text="${being.beingFaction}"></td>
+            <td th:text="${being.beingAbilities}"></td>
+            <td th:text="${being.beingWeaknesses}"></td>
+            <td th:text="${being.beingSymbolism}"></td>
+            <td th:text="${being.beingLocations}"></td>
+            <td th:text="${being.beingStories}"></td>
             <td>
-				<a th:href="@{${editEntityPath}(pk=${entity.entityPK})}" th:text="'Edit'"></a>
+				<a th:href="@{${editEntityPath}(pk=${being.beingPK})}" th:text="'Edit'"></a>
 			</td>
 			<td>
-            	<a href="#" th:text="'Delete'" th:data-entity-pk="${entity.entityPK}" onclick="confirmDelete(this)"></a>
+            	<a href="#" th:text="'Delete'" th:data-entity-pk="${being.beingPK}" onclick="confirmDelete(this)"></a>
         	</td>
-		</tr>
-	</table>
-	<br>
-	<br>
-	<footer>
+        </tr>
+    </table>
+    
+    <br>
+    <footer>
 		<a href = "/">Home</a>
 		<a th:href = "@{${showAllEntityPath}}">Show All</a>
 		<a th:href="@{${createEntityPath}}">Create</a>
 	</footer>
-	
+    
     <script th:inline="javascript">
     	/*<![CDATA[*/
     	// Get the message from Thymeleaf variable

@@ -6,10 +6,81 @@
 </head>
 <body>
     <header>Tava</header>
-	<form th:object="${entity}" th:action="@{${entityPath}}" method="post">
+    			<nav>
+  <ul>
+    <li>
+      <a href="/being/beings">Beings</a>
+      <ul>
+        <li><a href="/being/beings">View</a></li>
+        <li><a href="/being/create">Create</a></li>
+      </ul>
+    </li>
+    
+    <li>
+      <a href="/faction/factions">Factions</a>
+      <ul>
+        <li><a href="/faction/factions">View</a></li>
+        <li><a href="/faction/create">Create</a></li>
+      </ul>
+    </li>
+
+    <li>
+      <a href="/species/species">Species</a>
+      <ul>
+        <li><a href="/species/species">View</a></li>
+        <li><a href="/species/create">Create</a></li>
+      </ul>
+    </li>
+
+	<li>
+      <a href="/ability/abilities">Abilities</a>
+      <ul>
+        <li><a href="/ability/abilities">View</a></li>
+        <li><a href="/ability/create">Create</a></li>
+      </ul>
+    </li>
+    
+    <li>
+      <a href="/weakness/weaknesses">Weaknesses</a>
+      <ul>
+        <li><a href="/weakness/weaknesses">View</a></li>
+        <li><a href="/weakness/create">Create</a></li>
+      </ul>
+    </li>
+    
+    <li>
+      <a href="/location/locations">Locations</a>
+      <ul>
+        <li><a href="/location/locations">View</a></li>
+        <li><a href="/location/create">Create</a></li>
+      </ul>
+    </li>
+    
+    <li>
+      <a href="/symbol/symbolism">Symbolism</a>
+      <ul>
+        <li><a href="/symbol/symbolism">View</a></li>
+        <li><a href="/symbol/create">Create</a></li>
+      </ul>
+    </li>
+    
+    <li>
+      <a href="/gender/genders">Genders</a>
+      <ul>
+        <li><a href="/gender/genders">View</a></li>
+        <li><a href="/gender/create">Create</a></li>
+      </ul>
+    </li>
+
+  </ul>
+</nav>
+	<form th:object="${entity}" th:action="@{${entitySaveUpdatePath}}" method="post">
+		
+		<p>Key: <span th:text="${ogEntity.entityPK}"></span></p>
+		<input type="hidden" th:field="*{entityPK}" th:value="${ogEntity.entityPK}" />
 		
 		<label th:text="${#request.getAttribute('label')}">Label Text:</label>
-		<input type="text" th:field="*{entityName}" id="entityNameInput">
+		<input type="text" th:value="${ogEntity.entityName}" th:field="*{entityName}" id="entityNameInput">
 		<div id="message"></div>
 		<span id="nameValidationError" th:if="${#fields.hasErrors('entityName')}" th:errors="*{entityName}">Cannot be blank</span>
 		
@@ -17,7 +88,7 @@
 		<div th:if="${entity.hasDescription()}">
 			<label>
 				Description:
-				<textarea th:field="*{entityDescription}" id="description" maxlength="255" rows="5" cols="40" wrap="soft" required></textarea>
+				<textarea th:field="*{entityDescription}" th:value="${ogEntity.entityDescription}" id="description" maxlength="255" rows="5" cols="40" wrap="soft" required></textarea>
 			</label>
 		</div>
 		
@@ -28,9 +99,12 @@
 
 	<br>
 	<br>
-	<a href="/">Home</a>
-	<br>
-	<br>
+	<footer>
+		<a href = "/">Home</a>
+		<a th:href = "@{${showAllEntityPath}}">Show All</a>
+		<a th:href="@{${createEntityPath}}">Create</a>
+	</footer>
+	
 
 <script th:inline="javascript">
 
@@ -47,7 +121,7 @@ input.addEventListener('input', function() {
 
   const name = this.value;
   
-  if(entities.includes(name)) {
+  if(entities.includes(name) && name !== /*[[${ogEntity.entityName}]]*/ "") {
 	  
     message.textContent = "Already exists.";
     message.style.color = "red";

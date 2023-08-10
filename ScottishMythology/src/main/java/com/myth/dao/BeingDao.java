@@ -10,7 +10,7 @@ import com.myth.entity.Being;
 @Repository
 public interface BeingDao extends JpaRepository<Being, Integer>{
 	
-	@Query("FROM Being WHERE beingName = :beingName")
+	@Query("FROM Being WHERE beingName LIKE %:beingName%")
     Being findByName(@Param("beingName") String beingName);
 
 }

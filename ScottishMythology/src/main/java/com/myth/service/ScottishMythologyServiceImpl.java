@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -13,6 +14,7 @@ import com.myth.entity.junction.*;
 import com.myth.service.junction.*;
 import com.myth.service.micro.*;
 
+@Service
 public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 
 	@Autowired
@@ -498,11 +500,25 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 
 	}
 	
-	public ModelAndView setUpLinks(String entity) {
+	@Override
+	public ModelAndView setUpLinks(String entity, String entities, ModelAndView modelAndView) {
+	
 		
-		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.addObject("entitySearchPath", "/" + entity + "/search");
+		modelAndView.addObject("showAllEntityPath", "/" + entity + "/" + entities);
+		modelAndView.addObject("editEntityPath", "/" + entity + "/edit");
+		modelAndView.addObject("deleteEntityPath", "/" + entity + "/delete");
+		modelAndView.addObject("createEntityPath", "/" + entity + "/create");
+		modelAndView.addObject("checkEntityName", entity + "/check-" + entity + "-name");
+		modelAndView.addObject("entityPath", "/" + entity + "/save-new");
+		modelAndView.addObject("entitySaveUpdatePath", "/" + entity + "/save-edit");
 		
+		String entityUpper = entity.replace(entity.charAt(0), Character.toUpperCase(entity.charAt(0)));
+		
+		modelAndView.addObject("label", entityUpper + " Name:");
+		modelAndView.addObject("entityType", entityUpper);
 		
 		return modelAndView;
 	}
+
 }

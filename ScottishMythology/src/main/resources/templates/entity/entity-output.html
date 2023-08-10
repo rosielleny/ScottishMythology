@@ -3,11 +3,79 @@
 <head>
 <meta charset="UTF-8">
 <title>Tava</title>
-<link th:href="@{/main.css}" rel="stylesheet">
+<!-- <link th:href="@{/main.css}" rel="stylesheet"> -->
 </head>
 <body>
 	<header>Tava</header>
-	<hr>
+				<nav>
+  <ul>
+    <li>
+      <a href="/being/beings">Beings</a>
+      <ul>
+        <li><a href="/being/beings">View</a></li>
+        <li><a href="/being/create">Create</a></li>
+      </ul>
+    </li>
+    
+    <li>
+      <a href="/faction/factions">Factions</a>
+      <ul>
+        <li><a href="/faction/factions">View</a></li>
+        <li><a href="/faction/create">Create</a></li>
+      </ul>
+    </li>
+
+    <li>
+      <a href="/species/species">Species</a>
+      <ul>
+        <li><a href="/species/species">View</a></li>
+        <li><a href="/species/create">Create</a></li>
+      </ul>
+    </li>
+
+	<li>
+      <a href="/ability/abilities">Abilities</a>
+      <ul>
+        <li><a href="/ability/abilities">View</a></li>
+        <li><a href="/ability/create">Create</a></li>
+      </ul>
+    </li>
+    
+    <li>
+      <a href="/weakness/weaknesses">Weaknesses</a>
+      <ul>
+        <li><a href="/weakness/weaknesses">View</a></li>
+        <li><a href="/weakness/create">Create</a></li>
+      </ul>
+    </li>
+    
+    <li>
+      <a href="/location/locations">Locations</a>
+      <ul>
+        <li><a href="/location/locations">View</a></li>
+        <li><a href="/location/create">Create</a></li>
+      </ul>
+    </li>
+    
+    <li>
+      <a href="/symbol/symbolism">Symbolism</a>
+      <ul>
+        <li><a href="/symbol/symbolism">View</a></li>
+        <li><a href="/symbol/create">Create</a></li>
+      </ul>
+    </li>
+    
+    <li>
+      <a href="/gender/genders">Genders</a>
+      <ul>
+        <li><a href="/gender/genders">View</a></li>
+        <li><a href="/gender/create">Create</a></li>
+      </ul>
+    </li>
+
+  </ul>
+</nav>
+	
 	<table border="1" th:if="${entity != null}">
 		<tr>
 			<th>Key</th>
@@ -22,17 +90,80 @@
 				<a th:href="@{${editEntityPath}(pk=${entity.entityPK})}" th:text="'Edit'"></a>
 			</td>
 			<td>
-				<a th:href="@{${deleteEntityPath}(pk=${entity.entityPK})}" th:text="'Delete'"></a>
-			</td>
+            	<a href="#" th:text="'Delete'" th:data-entity-pk="${entity.entityPK}" onclick="confirmDelete(this)"></a>
+        	</td>
 		</tr>
 	</table>
 	<br>
 	<h2 th:text="${message}"></h2>
-	<a href = "/">Home</a>
-	<a href = "@{${showAllEntityPath}}">Show All</a>
-	<a href="@{${createEntityPath}}">Create</a>
+	<footer>
+		<a href = "/">Home</a>
+		<a th:href = "@{${showAllEntityPath}}">Show All</a>
+		<a th:href="@{${createEntityPath}}">Create</a>
+	</footer>
 	<br>
 	<br>
 
 </body>
+<script th:inline="javascript">
+    	/*<![CDATA[*/
+    	// Get the message from Thymeleaf variable
+    	var message = /*[[${message}]]*/ null;
+
+    	// Get the dialog element
+    	var dialog = document.getElementById("myModal");
+
+    	// Function to show the dialog with a message
+    	function showDialog(message) {
+        	var popupMessage = document.getElementById("popupMessage");
+        	var okButton = document.getElementById("okButton");
+        
+        	popupMessage.textContent = message;
+        	dialog.showModal();
+
+        	okButton.onclick = function() {
+            	dialog.close();
+            	window.location.href = /*[[@{${showAllEntityPath}}]]*/ 'defaultURL';
+        	};
+    	}
+
+    	// Shows the dialog if a message is present
+    	if (message) {
+        	showDialog(message);
+    	}
+    	
+    	// Function to show the confirmation dialog for deletion
+    function confirmDelete(link) {
+        var dialog = document.getElementById("yesNoModal");
+        var yesNoMessage = document.getElementById("yesNoMessage");
+        var yesButton = document.getElementById("yesButton");
+        var noButton = document.getElementById("noButton");
+		
+		console.log(link.dataset);
+		var entityPK = link.dataset.entityPk;
+		console.log(entityPK);
+		
+		console.log(entityPK);
+        // Customize the message and actions for deletion
+        yesNoMessage.textContent = "Are you sure you want to delete this entry?";
+        yesButton.textContent = "Yes";
+        noButton.textContent = "No";
+
+        // Update the OK button behavior
+        var deleteUrl = /*[[@{${deleteEntityPath}}]]*/ 'defaultURL';
+        
+        yesButton.onclick = function() {
+            dialog.close();
+            // Redirect to the delete link
+            window.location.href = deleteUrl + "/" + entityPK;
+        };
+        
+        noButton.onclick = function() {
+            dialog.close();
+        };
+
+        dialog.showModal();
+    }
+    	/*]]>*/
+	</script>
 </html>

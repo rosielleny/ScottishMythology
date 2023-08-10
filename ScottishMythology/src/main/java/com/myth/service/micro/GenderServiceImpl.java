@@ -24,13 +24,13 @@ public class GenderServiceImpl implements GenderService {
 	HttpHeaders headers;
 
 	@Override
-	public Gender createGender(Gender ability) {
+	public Gender createGender(Gender gender) {
 		
-		String url = "http://localhost:7011/ability/new-ability/";
+		String url = "http://localhost:7011/gender/new-gender/";
 
 	    headers.setContentType(MediaType.APPLICATION_JSON);
 
-	    HttpEntity<Gender> requestEntity = new HttpEntity<>(ability, headers);
+	    HttpEntity<Gender> requestEntity = new HttpEntity<>(gender, headers);
 
 	    ResponseEntity<Gender> responseEntity = restTemplate.postForEntity(url, requestEntity, Gender.class);
 
@@ -44,7 +44,7 @@ public class GenderServiceImpl implements GenderService {
 	@Override
 	public List<Gender> getAllGender() {
 		
-		String url = "http://localhost:7011/ability/all-ability";
+		String url = "http://localhost:7011/gender/all-gender";
 		
 	    ResponseEntity<List<Gender>> response =
 	            restTemplate.exchange(url, HttpMethod.GET, null,
@@ -61,35 +61,35 @@ public class GenderServiceImpl implements GenderService {
 	}
 
 	@Override
-	public Gender getGenderById(int abilityPK) {
+	public Gender getGenderById(int genderPK) {
 		
-		String url = "http://localhost:7011/ability/";
-	    return restTemplate.getForObject(url + abilityPK, Gender.class);
+		String url = "http://localhost:7011/gender/";
+	    return restTemplate.getForObject(url + genderPK, Gender.class);
 	}
 
 	@Override
-	public Gender getGenderByName(String abilityName) {
+	public Gender getGenderByName(String genderName) {
 		
-		String url = "http://localhost:7011/ability/ability-by-name/";
-		return restTemplate.getForObject(url + abilityName, Gender.class);
+		String url = "http://localhost:7011/gender/gender-by-name/";
+		return restTemplate.getForObject(url + genderName, Gender.class);
 	}
 
 	@Override
-	public Boolean updateGender(Gender ability) {
+	public Boolean updateGender(Gender gender) {
 		
-		String url = "http://localhost:7011/ability/update-ability/" + ability.getGenderPK();
+		String url = "http://localhost:7011/gender/update-gender/" + gender.getGenderPK();
 	    
 	    headers.setContentType(MediaType.APPLICATION_JSON);
-	    HttpEntity<Gender> requestEntity = new HttpEntity<>(ability, headers);
+	    HttpEntity<Gender> requestEntity = new HttpEntity<>(gender, headers);
 
 	    ResponseEntity<Void> response = restTemplate.exchange(url, HttpMethod.PUT, requestEntity, Void.class);
 	    return response.getStatusCode() == HttpStatus.OK;
 	}
 
 	@Override
-	public Boolean deleteGender(int abilityPK) {
+	public Boolean deleteGender(int genderPK) {
 		
-		String url = "http://localhost:7011/ability/delete-ability/" + abilityPK;
+		String url = "http://localhost:7011/gender/delete-gender/" + genderPK;
 	    ResponseEntity<Void> response = restTemplate.exchange(url, HttpMethod.DELETE, null, Void.class);
 	    return response.getStatusCode() == HttpStatus.OK;
 	    

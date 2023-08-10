@@ -79,30 +79,33 @@
         <input type="text" name="name" placeholder="Search by Name">
         <button type="submit">Search</button>
     </form>
-    <!-- Check if message is present -->
+    <!-- Checks if message is present -->
 	<p th:if="${message}" th:text="${message}"></p>
 
-	<!-- Otherwise show entity -->  
-	<table border="1" th:if="${entity != null}">
-		<tr>
-			<th>Key</th>
-			<th>Name</th>
-            <th th:if="${entity.hasDescription()}">Description</th>
-		</tr>
-			<tr th:if="${entity != null}">
-			<td th:text="${entity.entityPK}"></td>
-            <td th:text="${entity.entityName}"></td>
-            <td th:if="${entity.hasDescription()}" th:text="${entity.entityDescription}"></td>
-            <td>
-				<a th:href="@{${editEntityPath}(pk=${entity.entityPK})}" th:text="'Edit'"></a>
-			</td>
-			<td>
-            	<a href="#" th:text="'Delete'" th:data-entity-pk="${entity.entityPK}" onclick="confirmDelete(this)"></a>
-        	</td>
-		</tr>
-	</table>
+	<!-- Otherwise shows entity -->  
+	<div id = "beingInfo" th:if="${being != null}">
+	
+		<p>Key: <span th:text="${being.beingPK}"></span></p>
+		<p>Name: <span th:text="${being.beingName}"></span></p>		
+		<p>Description: <span th:text="${being.beingDescription}"></span></p>
+		<p>Gender: <span th:text="${being.beingGender}"></span></p>
+		<p>Species: <span th:text="${being.beingSpecies}"></span></p>
+		<p>Faction: <span th:text="${being.beingFaction}"></span></p>		
+		<p>Abilities: <span th:text="${being.beingAbilities}"></span></p>
+		<p>Weaknesses: <span th:text="${being.beingWeaknesses}"></span></p>
+		<p>Symbolism: <span th:text="${being.beingSymbolism}"></span></p>		
+		<p>Locations: <span th:text="${being.beingLocations}"></span></p>
+		<p>Stories: <span th:text="${being.beingStories}"></span></p>
+  		<br>
+  		<a th:href="@{${editEntityPath}(pk=${being.beingPK})}" th:text="'Edit'"></a>
+  		<a href="#" th:text="'Delete'" th:data-entity-pk="${being.beingPK}" onclick="confirmDelete(this)"></a>
+	</div>
+	
+	<div th:if="${being.beingArt != null}" id="beingArt"></div>
+	
 	<br>
 	<br>
+	
 	<footer>
 		<a href = "/">Home</a>
 		<a th:href = "@{${showAllEntityPath}}">Show All</a>
