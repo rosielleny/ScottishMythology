@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -265,6 +267,22 @@ public class AbilityController {
 		modelAndView.setViewName("entity/show-all-entities");
 		
 		return modelAndView;
+	}
+	
+	// EXTRA
+	
+	// An add ability function used when a user needs to create a new ability while in the middle of another action
+	@PostMapping("ability/add")
+	public ResponseEntity<Map<String, Boolean>> sneakyAddAbility(@RequestBody Ability ability) {
+		Map<String, Boolean> response = new HashMap<>();
+		try {
+	        abilityService.createAbility(ability);
+	        response.put("success", true);
+	        return ResponseEntity.ok(response);
+	    } catch (Exception e) {
+	        response.put("success", false);
+	        return ResponseEntity.badRequest().body(response);
+	    }
 	}
 	
 }

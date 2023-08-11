@@ -17,15 +17,32 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.myth.entity.Being;
+import com.myth.entity.*;
 import com.myth.entity.composite.BeingComposite;
-import com.myth.service.ScottishMythologyService;
+import com.myth.service.*;
+import com.myth.service.micro.*;
 
 @Controller
 public class ScottishMythologyController {
 	
 	@Autowired
 	private ScottishMythologyService scottishMythologyService;
+	@Autowired
+	private AbilityService abilityService;
+	@Autowired
+	private FactionService factionService;
+	@Autowired
+	private GenderService genderService;
+	@Autowired
+	private LocationService locationService;
+	@Autowired
+	private SpeciesService speciesService;
+	@Autowired
+	private StoryService storyService;
+	@Autowired
+	private SymbolService symbolService;
+	@Autowired
+	private WeaknessService weaknessService;
 	
 	// HOME
 	
@@ -52,29 +69,116 @@ public class ScottishMythologyController {
 	            .collect(Collectors.toList());
 	}
 	
-//	
-//	
-//	// CREATE
-//	
-//	@CrossOrigin
-//	@RequestMapping("/being/create")
-//	public ModelAndView createAnBeing() {
-//		
-//		ModelAndView modelAndView = new ModelAndView();
-//		// Creating GenericEntity object
-//		GenericEntity entity = new GenericEntity(0, "");
-//		// Adding it to the mav
-//		modelAndView.addObject("entity", entity);
-//		// Getting the list of being names and adding to to the mav as "entities"
-//		modelAndView.addObject("entities", getBeings());
-//		// Calling a function to set up all possible links required for the template
-//		modelAndView = scottishMythologyService.setUpLinks("being", "beings", modelAndView);
-//		
-//		modelAndView.setViewName("entity/create-entity");
-//		
-//		return modelAndView;
-//		
-//	}
+	@ModelAttribute("abilities")
+	public List<String> getAbilities() {
+		// Getting all beings
+	    List<Ability> abilities = abilityService.getAllAbility(); 
+	    // Transforming the list of beings into a list of being names
+	    return abilities.stream()
+	            .map(ability -> ability.getAbilityName())
+	            .collect(Collectors.toList());
+	}
+	
+	@ModelAttribute("factions")
+	public List<String> getFactions() {
+		// Getting all beings
+	    List<Faction> factions = factionService.getAllFaction(); 
+	    // Transforming the list of beings into a list of being names
+	    return factions.stream()
+	            .map(faction -> faction.getFactionName())
+	            .collect(Collectors.toList());
+	}
+
+	@ModelAttribute("genders")
+	public List<String> getGenders() {
+		// Getting all beings
+	    List<Gender> genders = genderService.getAllGender(); 
+	    // Transforming the list of beings into a list of being names
+	    return genders.stream()
+	            .map(gender -> gender.getGenderType())
+	            .collect(Collectors.toList());
+	}
+	
+	@ModelAttribute("locations")
+	public List<String> getLocations() {
+		// Getting all beings
+	    List<Location> locations = locationService.getAllLocation(); 
+	    // Transforming the list of beings into a list of being names
+	    return locations.stream()
+	            .map(location -> location.getLocationName())
+	            .collect(Collectors.toList());
+	}
+	
+	@ModelAttribute("speciesList")
+	public List<String> getSpecies() {
+		// Getting all beings
+	    List<Species> speciesList = speciesService.getAllSpecies(); 
+	    // Transforming the list of beings into a list of being names
+	    return speciesList.stream()
+	            .map(species -> species.getSpeciesName())
+	            .collect(Collectors.toList());
+	}
+	
+	@ModelAttribute("stories")
+	public List<String> getStories() {
+		// Getting all beings
+	    List<Story> stories = storyService.getAllStory(); 
+	    // Transforming the list of beings into a list of being names
+	    return stories.stream()
+	            .map(story -> story.getStoryName())
+	            .collect(Collectors.toList());
+	}
+	
+	@ModelAttribute("symbols")
+	public List<String> getSymbols() {
+		// Getting all beings
+	    List<Symbol> symbols = symbolService.getAllSymbol(); 
+	    // Transforming the list of beings into a list of being names
+	    return symbols.stream()
+	            .map(symbol -> symbol.getSymbolName())
+	            .collect(Collectors.toList());
+	}
+	
+	@ModelAttribute("weaknesses")
+	public List<String> getWeaknesses() {
+		// Getting all beings
+	    List<Weakness> weaknesses = weaknessService.getAllWeakness(); 
+	    // Transforming the list of beings into a list of being names
+	    return weaknesses.stream()
+	            .map(weakness -> weakness.getWeaknessName())
+	            .collect(Collectors.toList());
+	}
+	
+	
+	// CREATE
+	
+	@CrossOrigin
+	@RequestMapping("/being/create")
+	public ModelAndView createAnBeing() {
+		
+		ModelAndView modelAndView = new ModelAndView();
+		
+		BeingComposite being = new BeingComposite();
+		// Adding it to the mav
+		modelAndView.addObject("being", being);
+		// Getting the list of being names and adding to to the mav as "entities"
+		modelAndView.addObject("beings", getBeings());
+		modelAndView.addObject("abilities", getAbilities());
+		modelAndView.addObject("factions", getFactions());
+		modelAndView.addObject("genders", getGenders());
+		modelAndView.addObject("locations", getLocations());
+		modelAndView.addObject("speciesList", getSpecies());
+		modelAndView.addObject("stories", getStories());
+		modelAndView.addObject("symbols", getSymbols());
+		modelAndView.addObject("weaknesses", getWeaknesses());
+		// Calling a function to set up all possible links required for the template
+		modelAndView = scottishMythologyService.setUpLinks("being", "beings", modelAndView);
+		
+		modelAndView.setViewName("being/create-being");
+		
+		return modelAndView;
+		
+	}
 //
 //	
 //	@CrossOrigin
