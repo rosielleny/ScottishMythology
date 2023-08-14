@@ -78,50 +78,151 @@
 </nav>
 
 
-	<form th:object="${being}" th:action="@{${entityPath}}" method="post">
+	<form enctype="multipart/form-data" th:object="${being}" th:action="@{${entityPath}}" method="post">
 		
-		<label id="createInput" th:text="${#request.getAttribute('label')}">Label Text:</label>
+		<label class="createInput" th:text="${#request.getAttribute('label')}">Label Text:</label>
 		<input type="text" th:field="*{beingName}" id="beingNameInput">
 		<div id="message"></div>
-		<span id="nameValidationError" th:if="${#fields.hasErrors('beingName')}" th:errors="*{entityName}">Cannot be blank</span>
+		<span id="nameValidationError" th:if="${#fields.hasErrors('beingName')}" th:errors="*{beingName}">Cannot be blank</span>
 	
 		<br><br>
-		<label id="createInput" >
+		<label class="createInput" >
 			Description:
 			<textarea th:field="*{beingDescription}" id="description" maxlength="255" rows="5" cols="40" wrap="soft" required></textarea>
 		</label>
 		<br><br>
-		<label id="createInput" >
+		<label class="createInput" >
 			Gender:
 			<select th:field="*{beingGender}" id="gender" required>
         		<option th:each="gender : ${genders}" th:value="${gender}" th:text="${gender}"></option>
     		</select>
 		</label>
+		
 		<br><br>
 		<!--Ability has an autofill drop-down list. Abilities are added one at a time
 		and added abilities are displayed below-->
-		<label id="createInput" >
+		<label class="createInput" >
 			Add an ability:
-    		<datalist id="abilitiesChoice">
+    		<datalist id="abilityChoice">
         		<!-- Loops through the abilities list and creates options-->
         		<th:block th:each="ability : ${abilities}">
             		<option th:value="${ability}" th:text="${ability}"></option>
         		</th:block>
     		</datalist>
-    <input type="text" id="ajax" list="abilitiesChoice" placeholder="eg. ability">
-    <button type="button" id="addButton">Add</button>
+    		<input name="beingAbilities" type="text" id="abilityInput" list="abilityChoice" placeholder="add an ability">
+    		<button type="button" class="addButton" data-section="ability">Add</button>
     		<br>
     		Abilities:
     		<div id="listToAdd">
-    		<ul id="abilitiesList">
+    		<ul id="abilityList">
     			<li th:each="ability : *{beingAbilities}">
-        			<span th:text="${ability}"></span> <button class="remove-button">Remove</button>
+        			<span th:text="${ability}"></span> <button data-section="ability" class="remove-button">Remove</button>
     			</li>
 			</ul>
 			</div>
 		</label>
-		<br><br>
 		
+		
+		<label class="createInput" >
+			Add a weakness:
+    		<datalist id="weaknessChoice">
+        		<!-- Loops through the abilities list and creates options-->
+        		<th:block th:each="weakness : ${weaknesses}">
+            		<option th:value="${weakness}" th:text="${weakness}"></option>
+        		</th:block>
+    		</datalist>
+    		<input name="beingWeaknesses" type="text" id="weaknessInput" list="weaknessChoice" placeholder="add a weakness">
+    		<button type="button" class="addButton" data-section="weakness">Add</button>
+    		<br>
+    		Weaknesses:
+    		<div id="weaknessListToAdd">
+    		<ul id="weaknessList">
+    			<li th:each="weakness : *{beingWeaknesses}">
+        			<span th:text="${weakness}"></span> <button data-section="weakness" class="remove-button">Remove</button>
+    			</li>
+			</ul>
+			</div>
+		</label>
+		
+		
+		<label class="createInput" >
+			Add a symbol:
+    		<datalist id="symbolChoice">
+        		<!-- Loops through the abilities list and creates options-->
+        		<th:block th:each="symbol : ${symbols}">
+            		<option th:value="${symbol}" th:text="${symbol}"></option>
+        		</th:block>
+    		</datalist>
+    		<input name="beingSymbolism" type="text" id="symbolInput" list="symbolChoice" placeholder="add a symbol">
+    		<button type="button" data-section="symbol" class="addButton">Add</button>
+    		<br>
+    		Symbols:
+    		<div id="symbolListToAdd">
+    		<ul id="symbolList">
+    			<li th:each="symbol : *{beingSymbolism}">
+        			<span th:text="${symbol}"></span> <button data-section="symbol" class="remove-button">Remove</button>
+    			</li>
+			</ul>
+			</div>
+		</label>
+		
+		<label class="createInput" >
+			Add a location:
+    		<datalist id="locationChoice">
+        		<!-- Loops through the abilities list and creates options-->
+        		<th:block th:each="location : ${locations}">
+            		<option th:value="${location}" th:text="${location}"></option>
+        		</th:block>
+    		</datalist>
+    		<input name="beingLocations" type="text" id="locationInput" list="locationChoice" placeholder="add a location">
+    		<button type="button" data-section="location" class="addButton">Add</button>
+    		<br>
+    		Locations:
+    		<div id="locationListToAdd">
+    		<ul id="locationList">
+    			<li th:each="location : *{beingLocations}">
+        			<span th:text="${location}"></span> <button data-section="location" class="remove-button">Remove</button>
+    			</li>
+			</ul>
+			</div>
+		</label>
+		
+		<label class="createInput" >
+			Add a story:
+    		<datalist id="storyChoice">
+        		<!-- Loops through the abilities list and creates options-->
+        		<th:block th:each="story : ${stories}">
+            		<option th:value="${story}" th:text="${story}"></option>
+        		</th:block>
+    		</datalist>
+    		<input name="beingStories" type="text" id="storyInput" list="storyChoice" placeholder="add a story">
+    		<button type="button" data-section="story" class="addButton">Add</button>
+    		<br>
+    		Stories:
+    		<div id="storyListToAdd">
+    		<ul id="storyList">
+    			<li th:each="story : *{beingStories}">
+        			<span th:text="${story}"></span> <button data-section="story" class="remove-button">Remove</button>
+    			</li>
+			</ul>
+			</div>
+		</label>
+		
+		<label class="createInput" >
+			Faction:
+			<select th:field="*{beingFaction}" id="faction" required>
+        		<option th:each="faction : ${factions}" th:value="${faction}" th:text="${faction}"></option>
+    		</select>
+		</label>
+		<br><br>
+		<label class="createInput" >
+			Species:
+			<select th:field="*{beingSpecies}" id="species" required>
+        		<option th:each="species : ${speciesList}" th:value="${species}" th:text="${species}"></option>
+    		</select>
+		</label>
+		
+		<br><br>
 		<button type="submit" id="createButton">Create</button>
 	</form>
 
@@ -134,82 +235,127 @@
 	</footer>
 
 <script th:inline="javascript">
+
+document.addEventListener("DOMContentLoaded", function() {
+	function initialiseEntitySection(sectionName){
+
+		const addButton = document.querySelector(`[data-section="${sectionName}"]`);
+		const input = document.getElementById(`${sectionName}Input`);
+		const sectionList = document.getElementById(`${sectionName}List`);
+		const sectionArray = Array.from(document.querySelectorAll(`#${sectionName}Choice option`)).map(option => option.value);
 	
-const addButton = document.getElementById('addButton');
-const input_2 = document.getElementById('ajax');
-const abilitiesList = document.getElementById('abilitiesList');
-const abilitiesArray = Array.from(document.querySelectorAll('#abilitiesChoice option')).map(option => option.value);
+	addButton.addEventListener('click', function() {
+	
+	const selectedSection = input.value;
 
-addButton.addEventListener('click', function() {
-    const selectedAbility = input_2.value;
-
-    if (selectedAbility.trim() !== "") {
-        // Check if the ability is in the abilitiesArray
-        if (!abilitiesArray.includes(selectedAbility)) {
-            const isConfirmed = confirm("This ability isn't in the database. Do you want to add it?");
-            
-            if (isConfirmed) {
+    	if (selectedSection.trim() !== "") {
+        // Check if the item is in the sectionArray
+        	if (!sectionArray.includes(selectedSection)) {
+            	const isConfirmed = confirm(`This ${sectionName} isn\'t in the database. Do you want to add it?`);
+            	
+            	if (isConfirmed) {
+					
+					if(sectionName == "ability" || sectionName == "weakness" || sectionName == "symbol"){
+						
+						
                 // Send the new ability to the server
-                fetch('/ability/add', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ abilityName: selectedAbility })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
+                	fetch(`/${sectionName}/add`, {
+                    	method: 'POST',
+                    	headers: {
+                        	'Content-Type': 'application/json'
+                    	},
+                    	body: JSON.stringify({ [`${sectionName}Name`]: selectedSection })
+                	})
+                	.then(response => response.json())
+                	.then(data => {
+                    	if (data.success) {
                         // If the ability is successfully saved on the server
-                        abilitiesArray.push(selectedAbility);
-                        alert('Ability added to the database!');
-                    } else {
-                        alert('There was an error adding the ability to the database.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('There was an error adding the ability to the database.');
-                });
-            }
-        }
+                        	sectionArray.push(selectedSection);
+                        	alert(`${sectionName} added to the database!`);
+                        	sectionList.innerHTML += '<li>' + selectedSection + ' <button class="remove-button">Remove</button></li>';
+        					input.value = "";
+                    	} else {
+                       		alert(`There was an error adding the ${sectionName} to the database.`);
+                    	}
+                	})
+                	.catch(error => {
+                    	console.error('Error:', error);
+                    	alert(`There was an error adding the ${sectionName} to the database.`);
+                	});
+                	}else if(sectionName == "location" || sectionName == "story"){
+						
+						const description = prompt(`Please enter a description for the new ${sectionName}:`);
+  						fetch('/location/add', {
+  							method: 'POST',
+  							headers: {
+    						'Content-Type': 'application/json' 
+  							},
+  							body: JSON.stringify({
+    						[`${sectionName}Name`]: selectedSection,
+    						[`${sectionName}Description`]: description
+  							}) 
+						})
+                	.then(response => response.json())
+                	.then(data => {
+                    	if (data.success) {
+                        // If the ability is successfully saved on the server
+                        	sectionArray.push(selectedSection);
+                        	alert(`${sectionName} added to the database!`);
+                        	sectionList.innerHTML += '<li>' + selectedSection + ' <button class="remove-button">Remove</button></li>';
+        					input.value = "";
+                    	} else {
+                       		alert(`There was an error adding the ${sectionName} to the database.`);
+                    	}
+                	})
+                	.catch(error => {
+                    	console.error('Error:', error);
+                    	alert(`There was an error adding the ${sectionName} to the database.`);
+                	});
+					}
+            	}
+        	}else{
+				sectionList.innerHTML += '<li>' + selectedSection + ' <button class="remove-button">Remove</button></li>';
+        		input.value = "";
+			}
 
-        // Update the abilitiesList on the page
-        abilitiesList.innerHTML += '<li>' + selectedAbility + ' <button class="remove-button">Remove</button></li>';
-        input_2.value = "";
-    }
+    	}
+	});
+
+	sectionList.addEventListener('click', function(event) {
+    	if (event.target.classList.contains('remove-button')) {
+        	event.target.parentElement.remove();
+    	}
+	});
+	}
+	
+	
+	/*<![CDATA[*/
+	var beings = /*[[${beings}]]*/ [];
+	/*]]>*/
+	
+	const input_name = document.getElementById('beingNameInput');
+	const submitBtn = document.getElementById('createButton');
+	const message = document.getElementById('message');
+	input_name.addEventListener('input', function() {
+    	const name = this.value;
+
+    	if (beings.some(being => being.toLowerCase() === name.toLowerCase())) {
+			
+        	message.textContent = "Already exists.";
+        	message.style.color = "red";
+        	submitBtn.disabled = true;
+    	} else {
+        	message.textContent = "";
+        	submitBtn.disabled = false;
+    	}
+	});
+
+	initialiseEntitySection('ability');
+	initialiseEntitySection('weakness');
+	initialiseEntitySection('symbol');
+	initialiseEntitySection('location');
+	initialiseEntitySection('story');
 });
-
-abilitiesList.addEventListener('click', function(event) {
-    if (event.target.classList.contains('remove-button')) {
-        event.target.parentElement.remove();
-    }
-});
-
-/* <![CDATA[ */
-var entities = /* [[${entities}]] */ [];
-/* ]]> */
-
-const input = document.getElementById('entityNameInput');
-const submitBtn = document.getElementById('createButton');
-
-input.addEventListener('input', function() {
-    const name = this.value;
-
-    if (entities.some(entity => entity.toLowerCase() === name.toLowerCase())) {
-        message.textContent = "Already exists.";
-        message.style.color = "red";
-        submitBtn.disabled = true;
-    } else {
-        message.textContent = "";
-        submitBtn.disabled = false;
-    }
-});
-
-var dataList = document.getElementById('abilities');
-var input2 = document.getElementById('ajax');
-
-
 </script>
 </body>
 </html>

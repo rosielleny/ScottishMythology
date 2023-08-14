@@ -155,6 +155,7 @@ public class ScottishMythologyController {
 	@CrossOrigin
 	@RequestMapping("/being/create")
 	public ModelAndView createAnBeing() {
+
 		
 		ModelAndView modelAndView = new ModelAndView();
 		
@@ -179,42 +180,42 @@ public class ScottishMythologyController {
 		return modelAndView;
 		
 	}
-//
-//	
-//	@CrossOrigin
-//	@RequestMapping("/being/save-new")
-//	public ModelAndView saveBeing(@Valid @ModelAttribute("entity")GenericEntity entity, BindingResult results) {
-//		
-//		
-//		ModelAndView modelAndView = new ModelAndView();
-//		// If the input has errors it wont be submitted
-//		if(results.hasErrors()) {
-//			return new ModelAndView("entity/create-entity", "entity", entity);
-//		}
-//		
-//		String message = null;
-//		
-//		if(entity != null) {
-//			// If we have Entity we convert it back into Being
-//			Being being = new Being();
-//			being.setBeingName(entity.getEntityName());
-//			// Then call the service to create it
-//			scottishMythologyService.createBeing(being);
-//			message = being.getBeingName() + " successfully added to the database.";
-//		}
-//		else {
-//			message = "An error occurred. Being not added to the database.";
-//		}
-//		
-//		// Adding the message
-//		modelAndView.addObject("message", message);
-//		// Adding all possible necessary links
-//		modelAndView = scottishMythologyService.setUpLinks("being", "beings", modelAndView);
-//		
-//		modelAndView.setViewName("entity/entity-output");
-//		
-//		return modelAndView;
-//	}
+
+	
+	@CrossOrigin
+	@RequestMapping("/being/save-new")
+	public ModelAndView saveBeing(@Valid @ModelAttribute("being")BeingComposite being, BindingResult results) {
+		
+		System.out.println(being);
+		
+		ModelAndView modelAndView = new ModelAndView();
+		// If the input has errors it wont be submitted
+		if(results.hasErrors()) {
+			return new ModelAndView("being/create-entity", "being", being);
+		}
+		
+		String message = null;
+		
+		if(being != null) {
+			
+			// Call the service to create it
+			if(scottishMythologyService.createBeingRecord(being) != null) {
+				message = being.getBeingName() + " successfully added to the database.";
+			}
+		}
+		else {
+			message = "An error occurred. Being not added to the database.";
+		}
+		
+		// Adding the message
+		modelAndView.addObject("message", message);
+		// Adding all possible necessary links
+		modelAndView = scottishMythologyService.setUpLinks("being", "beings", modelAndView);
+		
+		modelAndView.setViewName("being/being-output");
+		
+		return modelAndView;
+	}
 	
 	
 	// READ

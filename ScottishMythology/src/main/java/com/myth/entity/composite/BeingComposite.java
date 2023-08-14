@@ -1,6 +1,7 @@
 package com.myth.entity.composite;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.Lob;
@@ -188,6 +189,18 @@ public class BeingComposite {
 	public void setBeingLocations(List<String> beingLocations) {
 		this.beingLocations = beingLocations;
 	}
+
+	@Override
+	public String toString() {
+		return "BeingComposite [beingPK=" + beingPK + ", beingName=" + beingName + ", beingSpeciesPK=" + beingSpeciesPK
+				+ ", beingDescription=" + beingDescription + ", beingGenderPK=" + beingGenderPK + ", beingArt="
+				+ Arrays.toString(beingArt) + ", beingFactionPK=" + beingFactionPK + ", beingSpecies=" + beingSpecies
+				+ ", beingGender=" + beingGender + ", beingFaction=" + beingFaction + ", beingAbilities="
+				+ beingAbilities + ", beingWeaknesses=" + beingWeaknesses + ", beingSymbolism=" + beingSymbolism
+				+ ", beingStories=" + beingStories + ", beingLocations=" + beingLocations + "]";
+	}
+	
+	
 	
 	
 

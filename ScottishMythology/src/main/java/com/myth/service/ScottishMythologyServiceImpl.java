@@ -54,15 +54,23 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 		try {
 			// Extracting Being from BeingComposite
 			Being being = getBeingFromComposite(beingComposite); 
+	
 			// Creating a new Being
 			beingService.createBeing(being);
+			Being newBeing = beingService.getBeingByName(beingComposite.getBeingName());
+			beingComposite.setBeingPK(newBeing.getBeingPK());
 
 			// Extracting attributes from BeingComposite and creating new components
 			boolean abilitiesCreated = createUpdateBeingAbility(beingComposite);
+			System.out.println("Ability: "+abilitiesCreated);
 			boolean weaknessesCreated = createUpdateBeingWeakness(beingComposite);
+			System.out.println("Weakness: "+weaknessesCreated);
 			boolean symbolsCreated = createUpdateBeingSymbol(beingComposite);
+			System.out.println("Symbol: "+symbolsCreated);
 			boolean storiesCreated = createUpdateBeingStory(beingComposite);
+			System.out.println("Story: "+storiesCreated);
 			boolean locationsCreated = createUpdateBeingLocation(beingComposite);
+			System.out.println("Location: "+locationsCreated);
 
 			if (abilitiesCreated && weaknessesCreated && symbolsCreated && storiesCreated && locationsCreated) {
 				return getBeingRecordByName(being.getBeingName());
@@ -346,11 +354,20 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 
 		int beingPK = beingComposite.getBeingPK();
 		String beingName = beingComposite.getBeingName();
-		int beingSpecies = beingComposite.getBeingSpeciesPK();
+		// Species
+		Species species = speciesService.getSpeciesByName(beingComposite.getBeingSpecies());
+		int beingSpecies = species.getSpeciesPK();
 		String beingDescription = beingComposite.getBeingDescription();
-		int beingGender = beingComposite.getBeingGenderPK();
+		
+		// Gender
+		Gender gender = genderService.getGenderByName(beingComposite.getBeingGender());
+		int beingGender = gender.getGenderPK();
+		
 		byte[] beingArt = beingComposite.getBeingArt();
-		int beingFaction = beingComposite.getBeingFactionPK();
+		
+		// Faction
+		Faction faction = factionService.getFactionByName(beingComposite.getBeingFaction());
+		int beingFaction = faction.getFactionPK();
 
 		return new Being(beingPK, beingName, beingSpecies, beingDescription, beingGender, beingArt, beingFaction);
 

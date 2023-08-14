@@ -27,6 +27,7 @@ public class LocationResource {
 	private LocationService locationService;
 	
 	// Create
+	@CrossOrigin
 	@PostMapping(path = "/location/new-location", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Location> createLocation(@RequestBody Location location) {
 
@@ -72,6 +73,7 @@ public class LocationResource {
 
 	// Read
 	// Get all
+	@CrossOrigin
 	@GetMapping(path = "/location/all-location", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Location>> getAllLocation(){
 
@@ -85,6 +87,7 @@ public class LocationResource {
 	}
 	
 	// Update
+	@CrossOrigin
 	@PutMapping(path = "/location/update-location/{locationPK}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Location> updateLocation(@PathVariable int locationPK, @RequestBody Location location){
 
@@ -99,6 +102,7 @@ public class LocationResource {
 	}
 
 	// Delete
+	@CrossOrigin
 	@DeleteMapping(path = "/location/delete-location/{locationPK}")
 	public ResponseEntity<Boolean> deleteLocation(@PathVariable int locationPK){
 
