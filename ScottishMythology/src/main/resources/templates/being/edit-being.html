@@ -78,24 +78,32 @@
 </nav>
 
 
-	<form enctype="multipart/form-data" th:object="${being}" th:action="@{${entityPath}}" method="post">
+	<form enctype="multipart/form-data" th:object="${being}" th:action="@{${entitySaveUpdatePath}}" method="post">
+		
+		<p>Key: <span th:text="${ogBeing.beingPK}"></span></p>
+		<input type="hidden" th:field="*{beingPK}" th:value="${ogBeing.beingPK}" />
 		
 		<label class="createInput" th:text="${#request.getAttribute('label')}">Label Text:</label>
-		<input type="text" th:field="*{beingName}" id="beingNameInput">
+		<input type="text" th:value="${ogBeing.beingName}" th:field="*{beingName}" id="beingNameInput">
 		<div id="message"></div>
 		<span id="nameValidationError" th:if="${#fields.hasErrors('beingName')}" th:errors="*{beingName}">Cannot be blank</span>
 	
 		<br><br>
 		<label class="createInput" >
 			Description:
-			<textarea th:field="*{beingDescription}" id="description" maxlength="255" rows="5" cols="40" wrap="soft" required></textarea>
+			<textarea th:value="${ogBeing.beingDescription}" th:field="*{beingDescription}" id="description" maxlength="255" rows="5" cols="40" wrap="soft" required></textarea>
 		</label>
 		<br><br>
+		
 		<label class="createInput" >
 			Gender:
 			<select th:field="*{beingGender}" id="gender" required>
-        		<option th:each="gender : ${genders}" th:value="${gender}" th:text="${gender}"></option>
-    		</select>
+				<option th:each="gender : ${genders}" 
+            		th:value="${gender}" 
+            		th:text="${gender}" 
+            		th:selected="${gender == ogBeing.beingGender ? 'selected' : ''}">
+    			</option>    		
+    			</select>
 		</label>
 		
 		<br><br>
@@ -223,7 +231,7 @@
 		</label>
 		
 		<br><br>
-		<button type="submit" id="createButton">Create</button>
+		<button type="submit" id="createButton">Save</button>
 	</form>
 
 	<br>
@@ -231,12 +239,72 @@
 	<footer>
 		<a href = "/">Home</a>
 		<a th:href = "@{${showAllEntityPath}}">Show All</a>
-		<a th:href="@{${createEntityPath}}">Create</a>
+		<a th:href="@{${createEntityPath}}">Save</a>
 	</footer>
 
 <script th:inline="javascript">
 
 document.addEventListener("DOMContentLoaded", function() {
+	
+	/* Creating hidden inputs for pre-existing entries in:
+	*	- Abilities
+	*	- Weaknesses
+	*	– Symbolism
+	*	– Locations
+	*	– Stories */
+	
+	function createHiddenInputForExistingItems(sectionName) {
+        const sectionList = document.getElementById(`${sectionName}List`);
+        const listItems = sectionList.querySelectorAll('li');
+
+        listItems.forEach(item => {
+            const value = item.querySelector('span').textContent;
+            const uniqueId = Date.now() + Math.floor(Math.random() * 1000);  // Adding randomness to avoid id collisions
+
+            let hiddenInput = document.createElement("input");
+            hiddenInput.type = "hidden";
+            
+            if(sectionName == "ability"){
+            	hiddenInput.name = `beingAbilities[]`; 
+            	} // Adjust the name if you expand this for other sections
+            else if(sectionName == "weakness"){
+            	hiddenInput.name = `beingWeaknesses[]`; 
+            	}
+            if(sectionName == "symbol"){
+            	hiddenInput.name = `beingSymbolism[]`; 
+            	}
+            if(sectionName == "location"){
+            	hiddenInput.name = `beingLocations[]`; 
+            	}
+            if(sectionName == "story"){
+            	hiddenInput.name = `beingStories[]`; 
+            	}
+            
+            hiddenInput.value = value;
+            hiddenInput.setAttribute('data-id', uniqueId);
+
+            // Attach the hidden input to the form
+            document.querySelector('form').appendChild(hiddenInput);
+
+            // Also set the uniqueId as data-id for the li, so remove logic can sync properly
+            item.setAttribute('data-id', uniqueId);
+        });
+    }
+
+    // Call the above function for abilities on page load
+    createHiddenInputForExistingItems('ability');
+	createHiddenInputForExistingItems('weakness');
+	createHiddenInputForExistingItems('symbol');
+	createHiddenInputForExistingItems('location');
+	createHiddenInputForExistingItems('story');
+    
+    /* Creating new entries for:
+	*	- Abilities
+	*	- Weaknesses
+	*	– Symbolism
+	*	– Locations
+	*	– Stories */
+    
 	function initialiseEntitySection(sectionName){
 
 		const addButton = document.querySelector(`[data-section="${sectionName}"]`);
@@ -274,32 +342,6 @@ document.addEventListener("DOMContentLoaded", function() {
                         	alert(`${sectionName} added to the database!`);
                         	sectionList.innerHTML += '<li>' + selectedSection + ' <button class="remove-button">Remove</button></li>';
         					input.value = "";
-        					
-        					let hiddenInput = document.createElement("input");
-    						hiddenInput.type = "hidden";
-    						
-    						if(sectionName == "location"){
-    							hiddenInput.name = `beingLocations[]`; 
-    						}
-    						else if(sectionName == "story"){
-    							hiddenInput.name = `beingStories[]`; 
-    						}
-    						else if(sectionName == "ability"){
-    							hiddenInput.name = `beingAbilities[]`; 
-    						}
-    						else if(sectionName == "weakness"){
-    							hiddenInput.name = `beingWeaknesses[]`; 
-    							}
-    						else if(sectionName == "symbol"){
-    							hiddenInput.name = `beingSymbolism[]`; 
-    						}
-    						
-    						hiddenInput.value = selectedSection;
-    						hiddenInput.setAttribute('data-id', uniqueId);
-
-    						// Attach the hidden input to the form
-    						document.querySelector('form').appendChild(hiddenInput);
-    						
                     	} else {
                        		alert(`There was an error adding the ${sectionName} to the database.`);
                     	}
@@ -401,6 +443,13 @@ document.addEventListener("DOMContentLoaded", function() {
     	}
 	});
 
+	/* Removing entries for:
+	*	- Abilities
+	*	- Weaknesses
+	*	– Symbolism
+	*	– Locations
+	*	– Stories */
+
 	sectionList.addEventListener('click', function(event) {
     	if (event.target.classList.contains('remove-button')) {
 			
@@ -417,6 +466,8 @@ document.addEventListener("DOMContentLoaded", function() {
 	}
 	
 	
+	
+	/* Stops a duplicate name from being created */
 	
 	/*<![CDATA[*/
 	var beings = /*[[${beings}]]*/ [];

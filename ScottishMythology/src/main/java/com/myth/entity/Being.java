@@ -1,5 +1,7 @@
 package com.myth.entity;
 
+import java.util.Arrays;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -91,7 +93,15 @@ public class Being {
 	}
 	public void setBeingFaction(int beingFaction) {
 		this.beingFaction = beingFaction;
+	}
+
+	@Override
+	public String toString() {
+		return "Being [beingPK=" + beingPK + ", beingName=" + beingName + ", beingSpecies=" + beingSpecies
+				+ ", beingDescription=" + beingDescription + ", beingGender=" + beingGender + ", beingArt="
+				+ Arrays.toString(beingArt) + ", beingFaction=" + beingFaction + "]";
 	} 
 	
-
+	
+	
 }

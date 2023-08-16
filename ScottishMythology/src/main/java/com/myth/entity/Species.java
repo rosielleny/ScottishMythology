@@ -52,6 +52,12 @@ public class Species {
 	public void setSpeciesDescription(String speciesDescription) {
 		this.speciesDescription = speciesDescription;
 	}
+
+	@Override
+	public String toString() {
+		return "Species [speciesPK=" + speciesPK + ", speciesName=" + speciesName + ", speciesDescription="
+				+ speciesDescription + "]";
+	}
 	
 	
 }

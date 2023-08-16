@@ -44,11 +44,11 @@ public class BeingStoryServiceImpl implements BeingStoryService {
 	@Override
 	public List<BeingStory> getBeingStoryByBeingId(int beingPK) {
 		
-		List<BeingStory> beingAbilities = beingStoryDao.findByBeing(beingPK);
+		List<BeingStory> beingStories = beingStoryDao.findByBeing(beingPK);
 		
-		if(beingAbilities.size() >0) {
+		if(beingStories.size() >0) {
 			
-			return beingAbilities;
+			return beingStories;
 		}
 		
 		return null;

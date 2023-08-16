@@ -52,6 +52,13 @@ public class Faction {
 	public void setFactionDescription(String factionDescription) {
 		this.factionDescription = factionDescription;
 	}
+
+	@Override
+	public String toString() {
+		return "Faction [factionPK=" + factionPK + ", factionName=" + factionName + ", factionDescription="
+				+ factionDescription + "]";
+	}
+	
 	
 	
 }

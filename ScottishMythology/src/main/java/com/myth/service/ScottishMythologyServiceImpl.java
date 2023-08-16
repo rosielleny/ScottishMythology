@@ -47,30 +47,34 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 	BeingWeaknessService beingWeaknessService;
 	
 	
-	
+	//@Transactional
 	@Override
 	public BeingComposite createBeingRecord(BeingComposite beingComposite) {
 
 		try {
 			// Extracting Being from BeingComposite
 			Being being = getBeingFromComposite(beingComposite); 
-	
+			
+			System.out.println(being);
+			
 			// Creating a new Being
 			beingService.createBeing(being);
 			Being newBeing = beingService.getBeingByName(beingComposite.getBeingName());
 			beingComposite.setBeingPK(newBeing.getBeingPK());
-
+			
+			System.out.println(beingComposite);
+			
 			// Extracting attributes from BeingComposite and creating new components
 			boolean abilitiesCreated = createUpdateBeingAbility(beingComposite);
-			System.out.println("Ability: "+abilitiesCreated);
+			
 			boolean weaknessesCreated = createUpdateBeingWeakness(beingComposite);
-			System.out.println("Weakness: "+weaknessesCreated);
+		
 			boolean symbolsCreated = createUpdateBeingSymbol(beingComposite);
-			System.out.println("Symbol: "+symbolsCreated);
+		
 			boolean storiesCreated = createUpdateBeingStory(beingComposite);
-			System.out.println("Story: "+storiesCreated);
+		
 			boolean locationsCreated = createUpdateBeingLocation(beingComposite);
-			System.out.println("Location: "+locationsCreated);
+	
 
 			if (abilitiesCreated && weaknessesCreated && symbolsCreated && storiesCreated && locationsCreated) {
 				return getBeingRecordByName(being.getBeingName());
@@ -126,7 +130,7 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 		return convertToComposite(being);
 	}
 	
-	@Transactional
+	//@Transactional
 	@Override
 	public Boolean updateBeingRecord(BeingComposite beingComposite) {
 
@@ -138,11 +142,15 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 			boolean weaknessesUpdated = false;
 
 			BeingComposite oldBC = getBeingRecordById(beingComposite.getBeingPK());
-			Being being = beingService.getBeingById(beingComposite.getBeingPK());
+			Being being = getBeingFromComposite(beingComposite);
+			
+			System.out.println(being);
+			System.out.println(beingComposite);
 
 			if (being == null) {
 				return false;
 			}
+			
 			boolean beingUpdated = beingService.updateBeing(being);
 
 
@@ -160,7 +168,12 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 					}
 				}
 				abilityUpdated = createUpdateBeingAbility(beingComposite); // Handles entries that have been added
+				
+			}else if(oldBC.getBeingAbilities().equals(beingComposite.getBeingAbilities())) {
+				
+				abilityUpdated = true;
 			}
+			
 			if(oldBC.getBeingLocations().equals(beingComposite.getBeingLocations()) != true) {
 
 				for(String i: oldBC.getBeingLocations()) {
@@ -174,7 +187,12 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 					}
 				}
 				locationsUpdated = createUpdateBeingLocation(beingComposite);
+				
+			}else if(oldBC.getBeingLocations().equals(beingComposite.getBeingLocations())) {
+				
+				locationsUpdated = true;
 			}
+			
 			if(oldBC.getBeingStories().equals(beingComposite.getBeingStories()) != true) {
 
 				for(String i: oldBC.getBeingStories()) {
@@ -188,7 +206,12 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 					}
 				}
 				storiesUpdated = createUpdateBeingStory(beingComposite);
+				
+			}else if(oldBC.getBeingStories().equals(beingComposite.getBeingStories())) {
+				
+				storiesUpdated = true;
 			}
+			
 			if(oldBC.getBeingSymbolism().equals(beingComposite.getBeingSymbolism()) != true) {
 
 				for(String i: oldBC.getBeingSymbolism()) {
@@ -202,7 +225,12 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 					}
 				}
 				symbolismUpdated = createUpdateBeingSymbol(beingComposite);
+				
+			}else if(oldBC.getBeingSymbolism().equals(beingComposite.getBeingSymbolism())) {
+				
+				symbolismUpdated = true;
 			}
+			
 			if(oldBC.getBeingWeaknesses().equals(beingComposite.getBeingWeaknesses()) != true) {
 
 				for(String i: oldBC.getBeingWeaknesses()) {
@@ -216,7 +244,12 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 					}
 				}
 				weaknessesUpdated = createUpdateBeingWeakness(beingComposite);
+				
+			}else if(oldBC.getBeingWeaknesses().equals(beingComposite.getBeingWeaknesses())) {
+				
+				weaknessesUpdated = true;
 			}
+			
 			if(abilityUpdated && locationsUpdated && storiesUpdated && symbolismUpdated && weaknessesUpdated && beingUpdated) {
 				return true;
 			}
@@ -351,25 +384,55 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 	// The following method is used to get Being from BeingComposite
 
 	private Being getBeingFromComposite(BeingComposite beingComposite) {
-
+		
+		int beingSpecies = 0;
+		int beingGender = 0;
+		int beingFaction = 0;
+		
 		int beingPK = beingComposite.getBeingPK();
+		System.out.println(beingComposite.getBeingPK());
+		
 		String beingName = beingComposite.getBeingName();
 		// Species
-		Species species = speciesService.getSpeciesByName(beingComposite.getBeingSpecies());
-		int beingSpecies = species.getSpeciesPK();
+		try {
+			Species species = speciesService.getSpeciesByName(beingComposite.getBeingSpecies());
+			beingSpecies = species.getSpeciesPK();
+		}
+		catch(Exception e) {
+			System.out.println("An error occurred in the Species Service.");
+		}
+		
 		String beingDescription = beingComposite.getBeingDescription();
 		
-		// Gender
-		Gender gender = genderService.getGenderByName(beingComposite.getBeingGender());
-		int beingGender = gender.getGenderPK();
 		
-		byte[] beingArt = beingComposite.getBeingArt();
+		// Gender
+		try {
+			Gender gender = genderService.getGenderByName(beingComposite.getBeingGender());
+			beingGender = gender.getGenderPK();
+		}catch(Exception e) {
+			
+			System.out.println("An error occurred in the Gender Service.");
+		}
+		
+		
+		byte[] beingArt = null;
+		
+		if(beingComposite.getBeingArt() != null) {
+			beingArt = beingComposite.getBeingArt();
+		}
 		
 		// Faction
-		Faction faction = factionService.getFactionByName(beingComposite.getBeingFaction());
-		int beingFaction = faction.getFactionPK();
-
-		return new Being(beingPK, beingName, beingSpecies, beingDescription, beingGender, beingArt, beingFaction);
+		try {
+			Faction faction = factionService.getFactionByName(beingComposite.getBeingFaction());
+			beingFaction = faction.getFactionPK();
+		}catch(Exception e) {
+			
+			System.out.println("An error occurred in the Faction Service.");
+		}
+		
+		Being newBeing = new Being(beingPK, beingName, beingSpecies, beingDescription, beingGender, beingArt, beingFaction);
+		System.out.println(newBeing);
+		return newBeing;
 
 
 	}
@@ -472,7 +535,11 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 				if(beingStoryService.getBeingStoryById(key) == null) {
 					BeingStory beingStory = new BeingStory(key);
 					beingStoryService.createBeingStory(beingStory);
-					allStorysCreatedSuccessfully = true;
+					if(beingStoryService.getBeingStoryById(key) != null)
+						allStorysCreatedSuccessfully = true;
+					}
+				else {
+					allStorysCreatedSuccessfully = false;
 				}
 				
 			} else 

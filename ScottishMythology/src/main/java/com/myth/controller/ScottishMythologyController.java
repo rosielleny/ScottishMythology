@@ -186,7 +186,6 @@ public class ScottishMythologyController {
 	@RequestMapping("/being/save-new")
 	public ModelAndView saveBeing(@Valid @ModelAttribute("being")BeingComposite being, BindingResult results) {
 		
-		System.out.println(being);
 		
 		ModelAndView modelAndView = new ModelAndView();
 		// If the input has errors it wont be submitted
@@ -201,10 +200,12 @@ public class ScottishMythologyController {
 			// Call the service to create it
 			if(scottishMythologyService.createBeingRecord(being) != null) {
 				message = being.getBeingName() + " successfully added to the database.";
+			}else {
+				message = "An backend error occurred. Being not added to the database.";
 			}
 		}
 		else {
-			message = "An error occurred. Being not added to the database.";
+			message = "An frontend error occurred. Being not added to the database.";
 		}
 		
 		// Adding the message
@@ -261,107 +262,100 @@ public class ScottishMythologyController {
 		
 		return modelAndView;
 	}
-//	
-//	// UPDATE
-//	
-//	@CrossOrigin
-//	@RequestMapping("/being/edit")
-//	public ModelAndView editBeings(@RequestParam int pk) {
-//		
-//		ModelAndView modelAndView = new ModelAndView();
-//		// Getting being by Id
-//		Being being = scottishMythologyService.getBeingById(pk);
-//		// Converting being to GenericEntity
-//		GenericEntity ogEntity = new GenericEntity(being.getBeingPK(), being.getBeingName());
-//		// Creating a second store for the same entity
-//		GenericEntity entity = new GenericEntity(ogEntity.getEntityPK(), ogEntity.getEntityName());
-//		
-//		// Adding the list of being names
-//		modelAndView.addObject("entities", getBeings());
-//		
-//		modelAndView.addObject("entity", entity);
-//		// Adding all possible links
-//		modelAndView = scottishMythologyService.setUpLinks("being", "beings", modelAndView);
-//		modelAndView.addObject("ogEntity", ogEntity);
-//		modelAndView.setViewName("entity/edit-entity");
-//		
-//		
-//		return modelAndView;
-//	}
-//	
-//	@CrossOrigin
-//	@RequestMapping("/being/save-edit")
-//	public ModelAndView saveEdittedBeing(@Valid @ModelAttribute("entity")GenericEntity entity, BindingResult results){
-//		
-//		
-//		ModelAndView modelAndView = new ModelAndView();
-//		
-//		if(results.hasErrors()) {
-//			return new ModelAndView("entity/edit-entity", "entity", entity);
-//		}
-//		
-//		String message = null;
-//		
-//		if(entity != null) {
-//			// Getting the original being by PK
-//			Being being = scottishMythologyService.getBeingById(entity.getEntityPK());
-//			// Setting the name to the new name
-//			being.setBeingName(entity.getEntityName());
-//			
-//			if(scottishMythologyService.updateBeing(being)) {
-//				
-//				message = being.getBeingName() + " successfully updated";
-//				
-//			}else {
-//				message = "An error occurred. Being not updated. Backend";
-//			}
-//		}
-//		else {
-//			message = "An error occurred. Being not updated. Frontend";
-//		}
-//		
-//		// Getting the new being by ID
-//		Being newBeing = scottishMythologyService.getBeingById(entity.getEntityPK());
-//		// Converting to GenericEntity
-//		GenericEntity newEntity = new GenericEntity(newBeing.getBeingPK(), newBeing.getBeingName());
-//		modelAndView.addObject("entity", newEntity);
-//		modelAndView.addObject("message", message);
-//		// Adding all possible links to the mav
-//		modelAndView = scottishMythologyService.setUpLinks("being", "beings", modelAndView);
-//		
-//		modelAndView.setViewName("entity/entity-output");
-//		
-//		return modelAndView;
-//	}
-//	
-//	// DELETE
-//	
-//	@CrossOrigin
-//	@RequestMapping("/being/delete/{pk}")
-//	public ModelAndView deleteBeings(@PathVariable int pk) {
-//		
-//		ModelAndView modelAndView = new ModelAndView();
-//		// Adding all possible links
-//		modelAndView = scottishMythologyService.setUpLinks("being", "beings", modelAndView);
-//		// Getting the being by PK
-//		Being being = scottishMythologyService.getBeingById(pk);
-//		// Converting to GenericEntity
-//		GenericEntity entity = new GenericEntity(being.getBeingPK(), being.getBeingName());
-//		
-//		if(scottishMythologyService.deleteBeing(pk)) {
-//			modelAndView.addObject("message", being.getBeingName() + " successfully deleted from Beings.");
-//		}else {
-//			modelAndView.addObject("message", "Failed to delete " + being.getBeingName() + " from Beings.");
-//		}
-//		
-//		// Getting list of beings as GenericEntity list
-//		List<GenericEntity> entityList = convertToGenericEntityList(scottishMythologyService.getAllBeing());
-//		
-//		modelAndView.addObject("entity", entity);
-//		modelAndView.addObject("entityList", entityList);
-//		modelAndView.setViewName("entity/show-all-entities");
-//		
-//		return modelAndView;
-//	}
-//
+	
+	// UPDATE
+	
+	@CrossOrigin
+	@RequestMapping("/being/edit")
+	public ModelAndView editBeings(@RequestParam int pk) {
+		
+		ModelAndView modelAndView = new ModelAndView();
+		// Getting being by Id
+		BeingComposite ogBeing = scottishMythologyService.getBeingRecordById(pk);
+		
+		// Creating a second store for the same entity
+		BeingComposite being = ogBeing;
+		
+		// Adding the list of being names
+		modelAndView.addObject("beings", getBeings());
+		
+		modelAndView.addObject("being", being);
+		// Adding all possible links
+		modelAndView = scottishMythologyService.setUpLinks("being", "beings", modelAndView);
+		modelAndView.addObject("ogBeing", ogBeing);
+		modelAndView.setViewName("being/edit-being");
+		
+		
+		return modelAndView;
+	}
+	
+	@CrossOrigin
+	@RequestMapping("/being/save-edit")
+	public ModelAndView saveEdittedBeing(@Valid @ModelAttribute("being")BeingComposite being, BindingResult results){
+		
+		
+		ModelAndView modelAndView = new ModelAndView();
+		
+		if(results.hasErrors()) {
+			return new ModelAndView("being/edit-being", "being", being);
+		}
+		
+		String message = null;
+		
+		if(being != null) {
+			
+			if(scottishMythologyService.updateBeingRecord(being)) {
+				
+				message = being.getBeingName() + " successfully updated";
+				
+			}else {
+				message = "A backend error occurred. Being not updated.";
+			}
+		}
+		else {
+			message = "A frontend error occurred. Being not updated.";
+		}
+		
+		// Getting the new being by ID
+		BeingComposite newBeing = scottishMythologyService.getBeingRecordById(being.getBeingPK());
+		// Converting to GenericEntity
+		modelAndView.addObject("being", newBeing);
+		modelAndView.addObject("message", message);
+		// Adding all possible links to the mav
+		modelAndView = scottishMythologyService.setUpLinks("being", "beings", modelAndView);
+		
+		modelAndView.setViewName("being/being-output");
+		
+		return modelAndView;
+	}
+	
+	// DELETE
+	
+	@CrossOrigin
+	@RequestMapping("/being/delete/{pk}")
+	public ModelAndView deleteBeings(@PathVariable int pk) {
+		
+		ModelAndView modelAndView = new ModelAndView();
+		// Adding all possible links
+		modelAndView = scottishMythologyService.setUpLinks("being", "beings", modelAndView);
+		// Getting the being by PK
+		BeingComposite being = scottishMythologyService.getBeingRecordById(pk);
+		// Converting to GenericEntity
+	
+		if(scottishMythologyService.deleteBeingRecord(pk)) {
+			modelAndView.addObject("message", being.getBeingName() + " successfully deleted from Beings.");
+		}else {
+			modelAndView.addObject("message", "Failed to delete " + being.getBeingName() + " from Beings.");
+		}
+		
+		// Getting list of beings as GenericEntity list
+		List<BeingComposite> beingList = scottishMythologyService.getAllBeingRecords();
+		
+		modelAndView.addObject("entity", being);
+		modelAndView.addObject("entityList", beingList);
+		modelAndView.setViewName("being/show-all-beings");
+		
+		return modelAndView;
+	}
+
 }

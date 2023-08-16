@@ -70,7 +70,7 @@ public class GenderServiceImpl implements GenderService {
 	@Override
 	public Gender getGenderByName(String genderName) {
 		
-		String url = "http://localhost:7011/gender/gender-by-name/";
+		String url = "http://localhost:7011/gender/gender-by-type/";
 		return restTemplate.getForObject(url + genderName, Gender.class);
 	}
 
