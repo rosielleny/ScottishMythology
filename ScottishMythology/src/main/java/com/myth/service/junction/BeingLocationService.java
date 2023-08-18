@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.myth.entity.junction.BeingLocation;
 import com.myth.entity.junction.KeyBeingLocation;
-import com.myth.service.EntityService;
+
 
 public interface BeingLocationService{
 

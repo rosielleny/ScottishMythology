@@ -23,9 +23,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.myth.entity.Weakness;
+import com.myth.entity.Being;
+import com.myth.entity.Weakness;
 import com.myth.entity.Weakness;
 import com.myth.entity.composite.GenericEntity;
+import com.myth.entity.junction.BeingWeakness;
+import com.myth.entity.junction.KeyBeingWeakness;
+import com.myth.service.BeingService;
 import com.myth.service.ScottishMythologyService;
+import com.myth.service.junction.BeingWeaknessService;
 import com.myth.service.micro.WeaknessService;
 
 @Controller
@@ -35,6 +41,10 @@ public class WeaknessController {
 	private WeaknessService weaknessService;
 	@Autowired
 	private ScottishMythologyService scottishMythologyService;
+	@Autowired
+	private BeingService beingService;
+	@Autowired
+	private BeingWeaknessService beingWeaknessService;
 	
 	// Model Attributes
 	
@@ -105,6 +115,9 @@ public class WeaknessController {
 			// Then call the service to create it
 			weaknessService.createWeakness(weakness);
 			message = weakness.getWeaknessName() + " successfully added to the database.";
+			
+			Weakness createdWeakness = weaknessService.getWeaknessByName(weakness.getWeaknessName());
+			entity = new GenericEntity(createdWeakness.getWeaknessPK(), createdWeakness.getWeaknessName());
 		}
 		else {
 			message = "An error occurred. Weakness not added to the database.";
@@ -114,7 +127,7 @@ public class WeaknessController {
 		modelAndView.addObject("message", message);
 		// Adding all possible necessary links
 		modelAndView = scottishMythologyService.setUpLinks("weakness", "weaknesses", modelAndView);
-		
+		modelAndView.addObject("entity", entity);
 		modelAndView.setViewName("entity/entity-output");
 		
 		return modelAndView;
@@ -159,8 +172,36 @@ public class WeaknessController {
 		}
 		else {
 			
-			modelAndView.addObject("message", "No weaknesses were found for " + request.getParameter("name"));
-			modelAndView.setViewName("entity/show-entity");
+			Being being = beingService.getBeingByName(request.getParameter("name"));
+			
+			if(being !=null) {
+				
+				int id = being.getBeingPK();
+				List<BeingWeakness> beingWeaknesses = beingWeaknessService.getBeingWeaknessByBeingId(id);
+				List<Weakness> weaknessList = new ArrayList<Weakness>();
+				
+				for(BeingWeakness beingWeakness: beingWeaknesses) {
+					
+					KeyBeingWeakness key = beingWeakness.getId();
+					int weaknessKey = key.getWeaknessPK();
+					
+					Weakness foundWeakness = weaknessService.getWeaknessById(weaknessKey);
+					
+					weaknessList.add(foundWeakness);
+				}
+				
+				List<GenericEntity> entityList = convertToGenericEntityList(weaknessList);
+				
+				modelAndView.addObject("entityList", entityList);
+				modelAndView.addObject("message", "Weakness results for " + request.getParameter("name"));
+				modelAndView.setViewName("entity/show-entity");
+				return modelAndView;
+			}
+			else {
+			
+				modelAndView.addObject("message", "No weaknesses were found for " + request.getParameter("name"));
+				modelAndView.setViewName("entity/show-entity");
+			}
 		}
 		
 		return modelAndView;

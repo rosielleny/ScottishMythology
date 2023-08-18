@@ -22,10 +22,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.myth.entity.Ability;
+import com.myth.entity.Being;
 import com.myth.entity.Symbol;
 import com.myth.entity.Symbol;
 import com.myth.entity.composite.GenericEntity;
+import com.myth.entity.junction.BeingAbility;
+import com.myth.entity.junction.BeingSymbolism;
+import com.myth.entity.junction.KeyBeingAbility;
+import com.myth.entity.junction.KeyBeingSymbolism;
+import com.myth.service.BeingService;
 import com.myth.service.ScottishMythologyService;
+import com.myth.service.junction.BeingSymbolismService;
 import com.myth.service.micro.SymbolService;
 
 @Controller
@@ -35,6 +43,10 @@ public class SymbolController {
 	private SymbolService symbolService;
 	@Autowired
 	private ScottishMythologyService scottishMythologyService;
+	@Autowired
+	private BeingService beingService;
+	@Autowired
+	private BeingSymbolismService beingSymbolismService;
 	
 	// Model Attributes
 	
@@ -105,6 +117,10 @@ public class SymbolController {
 			// Then call the service to create it
 			symbolService.createSymbol(symbol);
 			message = symbol.getSymbolName() + " successfully added to the database.";
+			
+			Symbol createdSymbol = symbolService.getSymbolByName(symbol.getSymbolName());
+			
+			entity = new GenericEntity(symbol.getSymbolPK(), symbol.getSymbolName());
 		}
 		else {
 			message = "An error occurred. Symbol not added to the database.";
@@ -114,7 +130,7 @@ public class SymbolController {
 		modelAndView.addObject("message", message);
 		// Adding all possible necessary links
 		modelAndView = scottishMythologyService.setUpLinks("symbol", "symbolism", modelAndView);
-		
+		modelAndView.addObject("entity", entity);
 		modelAndView.setViewName("entity/entity-output");
 		
 		return modelAndView;
@@ -159,8 +175,36 @@ public class SymbolController {
 		}
 		else {
 			
-			modelAndView.addObject("message", "No symbols were found for " + request.getParameter("name"));
-			modelAndView.setViewName("entity/show-entity");
+			Being being = beingService.getBeingByName(request.getParameter("name"));
+			
+			if(being !=null) {
+				
+				int id = being.getBeingPK();
+				List<BeingSymbolism> beingSymbols = beingSymbolismService.getBeingSymbolismByBeingId(id);
+				List<Symbol> symbolList = new ArrayList<Symbol>();
+				
+				for(BeingSymbolism beingSymbol: beingSymbols) {
+					
+					KeyBeingSymbolism key = beingSymbol.getId();
+					int symbolKey = key.getSymbolPK();
+					
+					Symbol foundSymbol = symbolService.getSymbolById(symbolKey);
+					
+					symbolList.add(foundSymbol);
+				}
+				
+				List<GenericEntity> entityList = convertToGenericEntityList(symbolList);
+				
+				modelAndView.addObject("entityList", entityList);
+				modelAndView.addObject("message", "Symbol results for " + request.getParameter("name"));
+				modelAndView.setViewName("entity/show-entity");
+				return modelAndView;
+			}
+			else {
+			
+				modelAndView.addObject("message", "No symbols were found for " + request.getParameter("name"));
+				modelAndView.setViewName("entity/show-entity");
+			}
 		}
 		
 		return modelAndView;

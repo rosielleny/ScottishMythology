@@ -37,8 +37,8 @@ public class BeingSymbolismServiceImpl implements BeingSymbolismService {
 
 	@Override
 	public BeingSymbolism getBeingSymbolismById(KeyBeingSymbolism beingSymbolismPK) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return beingSymbolismDao.findById(beingSymbolismPK).orElse(null);
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public class BeingSymbolismServiceImpl implements BeingSymbolismService {
 	@Override
 	public List<BeingSymbolism> getBeingSymbolismBySymbolismId(int symbolPK) {
 
-		List<BeingSymbolism> beingAbilities = beingSymbolismDao.findByBeing(symbolPK);
+		List<BeingSymbolism> beingAbilities = beingSymbolismDao.findBySymbol(symbolPK);
 
 		if(beingAbilities.size() >0) {
 

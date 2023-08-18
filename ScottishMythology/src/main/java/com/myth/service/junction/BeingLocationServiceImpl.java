@@ -38,8 +38,8 @@ public class BeingLocationServiceImpl implements BeingLocationService {
 
 	@Override
 	public BeingLocation getBeingLocationById(KeyBeingLocation beingLocationPK) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return beingLocationDao.findById(beingLocationPK).orElse(null);
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class BeingLocationServiceImpl implements BeingLocationService {
 	@Override
 	public List<BeingLocation> getBeingLocationByLocationId(int locationPK) {
 
-		List<BeingLocation> beingAbilities = beingLocationDao.findByBeing(locationPK);
+		List<BeingLocation> beingAbilities = beingLocationDao.findByLocation(locationPK);
 
 		if(beingAbilities.size() >0) {
 

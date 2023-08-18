@@ -74,6 +74,14 @@
       </ul>
     </li>
 
+	<li>
+      <a href="/story/stories">Stories</a>
+      <ul>
+        <li><a href="/story/stories">View</a></li>
+        <li><a href="/story/create">Create</a></li>
+      </ul>
+    </li>
+    
   </ul>
 </nav>
 
@@ -270,6 +278,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 	.then(data => {
                     	if (data.success) {
                         // If the ability is successfully saved on the server
+                        	const uniqueId1 = Date.now();
                         	sectionArray.push(selectedSection);
                         	alert(`${sectionName} added to the database!`);
                         	sectionList.innerHTML += '<li>' + selectedSection + ' <button class="remove-button">Remove</button></li>';
@@ -295,7 +304,7 @@ document.addEventListener("DOMContentLoaded", function() {
     						}
     						
     						hiddenInput.value = selectedSection;
-    						hiddenInput.setAttribute('data-id', uniqueId);
+    						hiddenInput.setAttribute('data-id', uniqueId1);
 
     						// Attach the hidden input to the form
     						document.querySelector('form').appendChild(hiddenInput);
@@ -426,9 +435,9 @@ document.addEventListener("DOMContentLoaded", function() {
 	const submitBtn = document.getElementById('createButton');
 	const message = document.getElementById('message');
 	input_name.addEventListener('input', function() {
-    	const name = this.value;
+    	const name = this.value.trim();
 
-    	if (beings.some(being => being.toLowerCase() === name.toLowerCase())) {
+    	if (beings.some(being => being.trim().toLowerCase() === name.toLowerCase())) {
 			
         	message.textContent = "Already exists.";
         	message.style.color = "red";

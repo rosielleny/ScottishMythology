@@ -22,9 +22,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.myth.entity.Ability;
+import com.myth.entity.Being;
 import com.myth.entity.Faction;
 import com.myth.entity.Faction;
 import com.myth.entity.composite.GenericEntity;
+import com.myth.entity.junction.BeingAbility;
+import com.myth.entity.junction.KeyBeingAbility;
+import com.myth.service.BeingService;
 import com.myth.service.ScottishMythologyService;
 import com.myth.service.micro.FactionService;
 
@@ -35,6 +40,9 @@ public class FactionController {
 	private FactionService factionService;
 	@Autowired
 	private ScottishMythologyService scottishMythologyService;
+	@Autowired
+	private BeingService beingService;
+	
 	
 	// Model Attributes
 	
@@ -103,6 +111,10 @@ public class FactionController {
 			faction.setFactionDescription(entity.getEntityDescription());
 			// Then call the service to create it
 			factionService.createFaction(faction);
+			
+			Faction createdFaction = factionService.getFactionByName(faction.getFactionName());
+			entity = new GenericEntity(createdFaction.getFactionPK(), createdFaction.getFactionName(), createdFaction.getFactionDescription());
+			
 			message = faction.getFactionName() + " successfully added to the database.";
 		}
 		else {
@@ -112,7 +124,7 @@ public class FactionController {
 		modelAndView.addObject("message", message);
 		// Adding all possible necessary links
 		modelAndView = scottishMythologyService.setUpLinks("faction", "factions", modelAndView);
-		
+		modelAndView.addObject("entity", entity);
 		modelAndView.setViewName("entity/entity-output");
 		
 		return modelAndView;
@@ -157,9 +169,26 @@ public class FactionController {
 		}
 		else {
 			
-			modelAndView.addObject("message", "No factions were found for " + request.getParameter("name"));
-			modelAndView.setViewName("entity/show-entity");
-		}
+			Being being = beingService.getBeingByName(request.getParameter("name"));
+			
+			if(being !=null) {
+				
+				int id = being.getBeingFaction();
+	
+				Faction factionBeing = factionService.getFactionById(id);
+				GenericEntity entity = new GenericEntity(factionBeing.getFactionPK(), factionBeing.getFactionName(), factionBeing.getFactionDescription());
+				
+				modelAndView.addObject("entity", entity);
+				modelAndView.addObject("message", "Faction results for " + request.getParameter("name"));
+				modelAndView.setViewName("entity/show-entity");
+				return modelAndView;
+			}
+			else {
+			
+				modelAndView.addObject("message", "No factions were found for " + request.getParameter("name"));
+				modelAndView.setViewName("entity/show-entity");
+			}
+		}	
 		
 		return modelAndView;
 	}

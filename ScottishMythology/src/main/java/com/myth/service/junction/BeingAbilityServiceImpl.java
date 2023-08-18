@@ -38,8 +38,8 @@ public class BeingAbilityServiceImpl implements BeingAbilityService {
 
 	@Override
 	public BeingAbility getBeingAbilityById(KeyBeingAbility beingAbilityPK) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return beingAbilityDao.findById(beingAbilityPK).orElse(null);
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class BeingAbilityServiceImpl implements BeingAbilityService {
 	@Override
 	public List<BeingAbility> getBeingAbilityByAbilityId(int abilityPK) {
 
-		List<BeingAbility> beingAbilities = beingAbilityDao.findByBeing(abilityPK);
+		List<BeingAbility> beingAbilities = beingAbilityDao.findByAbility(abilityPK);
 
 		if(beingAbilities.size() >0) {
 
@@ -84,8 +84,12 @@ public class BeingAbilityServiceImpl implements BeingAbilityService {
 
 	@Override
 	public Boolean deleteBeingAbility(KeyBeingAbility beingAbilityPK) {
+		
+		System.out.println("beingAbilityPK: "+ beingAbilityPK);
 
 		BeingAbility beingAbility = getBeingAbilityById(beingAbilityPK);
+		
+		System.out.println("Being Ability:" + beingAbility);
 
 		if(beingAbility !=null) {
 

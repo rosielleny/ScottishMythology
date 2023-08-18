@@ -1,5 +1,7 @@
 package com.myth.entity.junction;
 
+import java.util.Objects;
+
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 
@@ -27,5 +29,28 @@ public class BeingAbility {
 		this.id = id;
 	}
 
+	@Override
+	public String toString() {
+		return "BeingAbility [id=" + id + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		BeingAbility other = (BeingAbility) obj;
+		return Objects.equals(id, other.id);
+	}
+
+	
     
 }

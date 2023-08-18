@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.myth.entity.junction.BeingStory;
 import com.myth.entity.junction.KeyBeingStory;
-import com.myth.service.EntityService;
+
 
 public interface BeingStoryService{
 

@@ -23,9 +23,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.myth.entity.Story;
+import com.myth.entity.Being;
+import com.myth.entity.Story;
 import com.myth.entity.Story;
 import com.myth.entity.composite.GenericEntity;
+import com.myth.entity.junction.BeingStory;
+import com.myth.entity.junction.KeyBeingStory;
+import com.myth.service.BeingService;
 import com.myth.service.ScottishMythologyService;
+import com.myth.service.junction.BeingStoryService;
 import com.myth.service.micro.StoryService;
 
 @Controller
@@ -36,6 +42,10 @@ public class StoryController {
 	private StoryService storyService;
 	@Autowired
 	private ScottishMythologyService scottishMythologyService;
+	@Autowired
+	private BeingService beingService;
+	@Autowired
+	private BeingStoryService beingStoryService;
 	
 	// Model Attributes
 	
@@ -105,6 +115,9 @@ public class StoryController {
 			// Then call the service to create it
 			storyService.createStory(story);
 			message = story.getStoryName() + " successfully added to the database.";
+			
+			Story createdStory = storyService.getStoryByName(story.getStoryName());
+			entity = new GenericEntity(story.getStoryPK(), story.getStoryName(), story.getStoryDescription());
 		}
 		else {
 			message = "An error occurred. Story not added to the database.";
@@ -113,7 +126,7 @@ public class StoryController {
 		modelAndView.addObject("message", message);
 		// Adding all possible necessary links
 		modelAndView = scottishMythologyService.setUpLinks("story", "stories", modelAndView);
-		
+		modelAndView.addObject("entity", entity);
 		modelAndView.setViewName("entity/entity-output");
 		
 		return modelAndView;
@@ -158,8 +171,36 @@ public class StoryController {
 		}
 		else {
 			
-			modelAndView.addObject("message", "No stories were found for " + request.getParameter("name"));
-			modelAndView.setViewName("entity/show-entity");
+			Being being = beingService.getBeingByName(request.getParameter("name"));
+			
+			if(being !=null) {
+				
+				int id = being.getBeingPK();
+				List<BeingStory> beingStories = beingStoryService.getBeingStoryByBeingId(id);
+				List<Story> storyList = new ArrayList<Story>();
+				
+				for(BeingStory beingStory: beingStories) {
+					
+					KeyBeingStory key = beingStory.getId();
+					int storyKey = key.getStoryPK();
+					
+					Story foundStory = storyService.getStoryById(storyKey);
+					
+					storyList.add(foundStory);
+				}
+				
+				List<GenericEntity> entityList = convertToGenericEntityList(storyList);
+				
+				modelAndView.addObject("entityList", entityList);
+				modelAndView.addObject("message", "Story results for " + request.getParameter("name"));
+				modelAndView.setViewName("entity/show-entity");
+				return modelAndView;
+			}
+			else {
+			
+				modelAndView.addObject("message", "No abilities were found for " + request.getParameter("name"));
+				modelAndView.setViewName("entity/show-entity");
+			}
 		}
 		
 		return modelAndView;

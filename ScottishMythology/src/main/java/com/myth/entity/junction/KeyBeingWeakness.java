@@ -1,6 +1,7 @@
 package com.myth.entity.junction;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -40,5 +41,28 @@ public class KeyBeingWeakness implements Serializable {
 		this.weaknessPK = weaknessPK;
 	}
 
+	@Override
+	public int hashCode() {
+		return Objects.hash(beingPK, weaknessPK);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		KeyBeingWeakness other = (KeyBeingWeakness) obj;
+		return beingPK == other.beingPK && weaknessPK == other.weaknessPK;
+	}
+
+	@Override
+	public String toString() {
+		return "KeyBeingWeakness [beingPK=" + beingPK + ", weaknessPK=" + weaknessPK + "]";
+	}
+
+	
     
 }

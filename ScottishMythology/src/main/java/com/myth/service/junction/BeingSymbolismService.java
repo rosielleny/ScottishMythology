@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.myth.entity.junction.BeingSymbolism;
 import com.myth.entity.junction.KeyBeingSymbolism;
-import com.myth.service.EntityService;
 
 public interface BeingSymbolismService{
 

@@ -22,9 +22,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.myth.entity.Being;
+import com.myth.entity.Species;
 import com.myth.entity.Species;
 import com.myth.entity.Species;
 import com.myth.entity.composite.GenericEntity;
+import com.myth.service.BeingService;
 import com.myth.service.ScottishMythologyService;
 import com.myth.service.micro.SpeciesService;
 
@@ -35,6 +38,8 @@ public class SpeciesController {
 	private SpeciesService speciesService;
 	@Autowired
 	private ScottishMythologyService scottishMythologyService;
+	@Autowired
+	private BeingService beingService;
 	
 	// Model Attributes
 	
@@ -104,6 +109,10 @@ public class SpeciesController {
 			// Then call the service to create it
 			speciesService.createSpecies(species);
 			message = species.getSpeciesName() + " successfully added to the database.";
+			
+			Species createdSpecies = speciesService.getSpeciesByName(species.getSpeciesName());
+			
+			entity = new GenericEntity(createdSpecies.getSpeciesPK(), createdSpecies.getSpeciesName(), createdSpecies.getSpeciesDescription());
 		}
 		else {
 			message = "An error occurred. Species not added to the database.";
@@ -112,7 +121,7 @@ public class SpeciesController {
 		modelAndView.addObject("message", message);
 		// Adding all possible necessary links
 		modelAndView = scottishMythologyService.setUpLinks("species", "species", modelAndView);
-		
+		modelAndView.addObject("entity", entity);
 		modelAndView.setViewName("entity/entity-output");
 		
 		return modelAndView;
@@ -157,8 +166,25 @@ public class SpeciesController {
 		}
 		else {
 			
-			modelAndView.addObject("message", "No species were found for " + request.getParameter("name"));
-			modelAndView.setViewName("entity/show-entity");
+			Being being = beingService.getBeingByName(request.getParameter("name"));
+			
+			if(being !=null) {
+				
+				int id = being.getBeingSpecies();
+	
+				Species speciesBeing = speciesService.getSpeciesById(id);
+				GenericEntity entity = new GenericEntity(speciesBeing.getSpeciesPK(), speciesBeing.getSpeciesName(), speciesBeing.getSpeciesDescription());
+				
+				modelAndView.addObject("entity", entity);
+				modelAndView.addObject("message", "Species results for " + request.getParameter("name"));
+				modelAndView.setViewName("entity/show-entity");
+				return modelAndView;
+			}
+			else {
+			
+				modelAndView.addObject("message", "No species were found for " + request.getParameter("name"));
+				modelAndView.setViewName("entity/show-entity");
+			}
 		}
 		
 		return modelAndView;

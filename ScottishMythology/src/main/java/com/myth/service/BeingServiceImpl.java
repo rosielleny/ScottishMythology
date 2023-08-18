@@ -14,6 +14,8 @@ public class BeingServiceImpl implements BeingService {
 	@Autowired
 	BeingDao beingDao;
 	
+	//CREATE 
+	
 	@Override
 	public Being createBeing(Being being) {
 
@@ -25,6 +27,8 @@ public class BeingServiceImpl implements BeingService {
 		}
 	}
 
+	// READ
+	
 	@Override
 	public List<Being> getAllBeing() {
 
@@ -43,6 +47,27 @@ public class BeingServiceImpl implements BeingService {
 
 		return beingDao.findByName(beingName);
 	}
+	
+	@Override
+	public List<Being> getBeingByFaction(int factionPK){
+		
+		return beingDao.findBeingByFaction(factionPK);
+	}
+	
+	@Override
+	public List<Being> getBeingByGender(int genderPK){
+		
+		return beingDao.findBeingByGender(genderPK);
+	}
+	
+	@Override
+	public List<Being> getBeingBySpecies(int speciesPK){
+		
+		return beingDao.findBeingBySpecies(speciesPK);
+	}
+	
+	
+	//UPDATE
 
 	@Override
 	public Boolean updateBeing(Being being) {

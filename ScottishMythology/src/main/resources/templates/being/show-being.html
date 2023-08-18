@@ -7,7 +7,7 @@
 </head>
 <body>
 	<header>Tava</header>
-				<nav>
+<nav>
   <ul>
     <li>
       <a href="/being/beings">Beings</a>
@@ -72,9 +72,18 @@
         <li><a href="/gender/create">Create</a></li>
       </ul>
     </li>
+    
+    <li>
+      <a href="/story/stories">Stories</a>
+      <ul>
+        <li><a href="/story/stories">View</a></li>
+        <li><a href="/story/create">Create</a></li>
+      </ul>
+    </li>
 
   </ul>
 </nav>
+
     <form th:action="@{${entitySearchPath}}" method="get">
         <input type="text" name="name" placeholder="Search by Name">
         <button type="submit">Search</button>
@@ -83,25 +92,69 @@
 	<p th:if="${message}" th:text="${message}"></p>
 
 	<!-- Otherwise shows entity -->  
-	<div id = "beingInfo" th:if="${being != null}">
-	
-		<p>Key: <span th:text="${being.beingPK}"></span></p>
-		<p>Name: <span th:text="${being.beingName}"></span></p>		
-		<p>Description: <span th:text="${being.beingDescription}"></span></p>
-		<p>Gender: <span th:text="${being.beingGender}"></span></p>
-		<p>Species: <span th:text="${being.beingSpecies}"></span></p>
-		<p>Faction: <span th:text="${being.beingFaction}"></span></p>		
-		<p>Abilities: <span th:text="${being.beingAbilities}"></span></p>
-		<p>Weaknesses: <span th:text="${being.beingWeaknesses}"></span></p>
-		<p>Symbolism: <span th:text="${being.beingSymbolism}"></span></p>		
-		<p>Locations: <span th:text="${being.beingLocations}"></span></p>
-		<p>Stories: <span th:text="${being.beingStories}"></span></p>
-  		<br>
-  		<a th:href="@{${editEntityPath}(pk=${being.beingPK})}" th:text="'Edit'"></a>
-  		<a href="#" th:text="'Delete'" th:data-entity-pk="${being.beingPK}" onclick="confirmDelete(this)"></a>
-	</div>
-	
-	<div th:if="${being.beingArt != null}" id="beingArt"></div>
+	<div th:if="${beingList != null and beingList.size() > 0}">
+    <table border="1">
+    <tr>
+        <th>Key</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Gender</th>
+        <th>Species</th>
+        <th>Faction</th>
+        <th>Abilities</th>
+        <th>Weaknesses</th>
+        <th>Symbolism</th>
+        <th>Locations</th>
+        <th>Stories</th>
+    </tr>
+    <tr th:each="being : ${beingList}">
+        <td th:text="${being.beingPK}"></td>
+        <td><a th:href="@{|${entitySearchPath}?name=${being.beingName}|}" th:text="${being.beingName}"></a></td>
+        <td th:text="${being.beingDescription}"></td>
+        <td th:text="${being.beingGender}"></td>
+        <td><a th:href="@{|/species/search?name=${being.beingSpecies}|}" th:text="${being.beingSpecies}"></a></td>
+        <td><a th:href="@{|/faction/search?name=${being.beingFaction}|}" th:text="${being.beingFaction}"></a></td>
+        <td th:text="${being.beingAbilities}"></td>
+        <td th:text="${being.beingWeaknesses}"></td>
+        <td th:text="${being.beingSymbolism}"></td>
+        <td>
+            <span th:each="location : ${being.beingLocations}">
+                <a th:href="@{|/location/search?name=${location}|}" th:text="${location}"></a><br>
+            </span>
+        </td>
+        <td>
+            <span th:each="story : ${being.beingStories}">
+                <a th:href="@{|/story/search?name=${story}|}" th:text="${story}"></a><br>
+            </span>
+        </td>
+        <td><a th:href="@{${editEntityPath}(pk=${being.beingPK})}" th:text="'Edit'"></a></td>
+        <td><a href="#" th:text="'Delete'" th:data-entity-pk="${being.beingPK}" onclick="confirmDelete(this)"></a></td>
+    </tr>
+</table>
+
+</div>
+<div id="beingInfo" th:if="${(being != null and beingList == null) or (beingList != null and beingList.size() <= 0)}">
+    <p>Key: <span th:text="${being.beingPK}"></span></p>
+    <p>Name: <span th:text="${being.beingName}"></span></p>
+    <p>Description: <span th:text="${being.beingDescription}"></span></p>
+    <p>Gender: <span th:text="${being.beingGender}"></span></p>
+    <p>Species: <a th:href="@{|/species/search?name=${being.beingSpecies}|}" th:text="${being.beingSpecies}"></a></p>
+    <p>Faction: <a th:href="@{|/faction/search?name=${being.beingFaction}|}" th:text="${being.beingFaction}"></a></p>
+    <p>Abilities: <span th:text="${being.beingAbilities}"></span></p>
+    <p>Weaknesses: <span th:text="${being.beingWeaknesses}"></span></p>
+    <p>Symbolism: <span th:text="${being.beingSymbolism}"></span></p>
+    <p>Locations: <span th:each="location : ${being.beingLocations}">
+                <a th:href="@{|/location/search?name=${location}|}" th:text="${location}"></a><br>
+            </span></p>
+    <p>Stories: <span th:each="story : ${being.beingStories}">
+                <a th:href="@{|/story/search?name=${story}|}" th:text="${story}"></a><br>
+            </span></p>
+    <br>
+    <a th:href="@{${editEntityPath}(pk=${being.beingPK})}" th:text="'Edit'"></a>
+    <a href="#" th:text="'Delete'" th:data-entity-pk="${being.beingPK}" onclick="confirmDelete(this)"></a>
+    <div th:if="${being.beingArt != null}" id="beingArt"></div>
+</div>
+
 	
 	<br>
 	<br>

@@ -7,7 +7,7 @@
 </head>
 <body>
     <header>Tava</header>
-    			<nav>
+<nav>
   <ul>
     <li>
       <a href="/being/beings">Beings</a>
@@ -72,6 +72,14 @@
         <li><a href="/gender/create">Create</a></li>
       </ul>
     </li>
+    
+    <li>
+      <a href="/story/stories">Stories</a>
+      <ul>
+        <li><a href="/story/stories">View</a></li>
+        <li><a href="/story/create">Create</a></li>
+      </ul>
+    </li>
 
   </ul>
 </nav>
@@ -107,16 +115,24 @@
         </tr>
         <tr th:each="being : ${beingList}">
             <td th:text="${being.beingPK}"></td>
-            <td th:text="${being.beingName}"></td>
+            <td><a th:href="@{|${entitySearchPath}?name=${being.beingName}|}" th:text="${being.beingName}"></a></td>
             <td th:text="${being.beingDescription}"></td>
             <td th:text="${being.beingGender}"></td>
-            <td th:text="${being.beingSpecies}"></td>
-            <td th:text="${being.beingFaction}"></td>
+            <td><a th:href="@{|/species/search?name=${being.beingSpecies}|}" th:text="${being.beingSpecies}"></a></td>
+        	<td><a th:href="@{|/faction/search?name=${being.beingFaction}|}" th:text="${being.beingFaction}"></a></td>
             <td th:text="${being.beingAbilities}"></td>
             <td th:text="${being.beingWeaknesses}"></td>
             <td th:text="${being.beingSymbolism}"></td>
-            <td th:text="${being.beingLocations}"></td>
-            <td th:text="${being.beingStories}"></td>
+            <td>
+            <span th:each="location : ${being.beingLocations}">
+                <a th:href="@{|/location/search?name=${location}|}" th:text="${location}"></a><br>
+            </span>
+        	</td>
+        	<td>
+            	<span th:each="story : ${being.beingStories}">
+                	<a th:href="@{|/story/search?name=${story}|}" th:text="${story}"></a><br>
+            	</span>
+        	</td>
             <td>
 				<a th:href="@{${editEntityPath}(pk=${being.beingPK})}" th:text="'Edit'"></a>
 			</td>

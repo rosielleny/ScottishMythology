@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.myth.entity.junction.BeingAbility;
 import com.myth.entity.junction.KeyBeingAbility;
-import com.myth.service.EntityService;
+
 
 public interface BeingAbilityService{
 

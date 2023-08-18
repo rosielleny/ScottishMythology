@@ -13,11 +13,20 @@ public interface BeingService{
 	List<Being> getAllBeing();
 	Being getBeingById(int beingPK);
 	Being getBeingByName(String beingName);
+	List<Being> getBeingByFaction(int factionPK);
+	List<Being> getBeingByGender(int genderPK);
+	List<Being> getBeingBySpecies(int speciesPK);
 	
 	// Update
 	Boolean updateBeing(Being being);
 	
 	// Delete
 	Boolean deleteBeing(int beingPK);
+
+	
+
+	
+
+
 
 }

@@ -7,7 +7,7 @@
 </head>
 <body>
 	<header>Tava</header>
-				<nav>
+<nav>
   <ul>
     <li>
       <a href="/being/beings">Beings</a>
@@ -72,6 +72,14 @@
         <li><a href="/gender/create">Create</a></li>
       </ul>
     </li>
+    
+    <li>
+      <a href="/story/stories">Stories</a>
+      <ul>
+        <li><a href="/story/stories">View</a></li>
+        <li><a href="/story/create">Create</a></li>
+      </ul>
+    </li>
 
   </ul>
 </nav>
@@ -83,24 +91,38 @@
 	<p th:if="${message}" th:text="${message}"></p>
 
 	<!-- Otherwise show entity -->  
-	<table border="1" th:if="${entity != null}">
-		<tr>
-			<th>Key</th>
-			<th>Name</th>
-            <th th:if="${entity.hasDescription()}">Description</th>
-		</tr>
-			<tr th:if="${entity != null}">
-			<td th:text="${entity.entityPK}"></td>
-            <td th:text="${entity.entityName}"></td>
-            <td th:if="${entity.hasDescription()}" th:text="${entity.entityDescription}"></td>
-            <td>
-				<a th:href="@{${editEntityPath}(pk=${entity.entityPK})}" th:text="'Edit'"></a>
-			</td>
-			<td>
-            	<a href="#" th:text="'Delete'" th:data-entity-pk="${entity.entityPK}" onclick="confirmDelete(this)"></a>
-        	</td>
-		</tr>
-	</table>
+	<table border="1">
+    <tr>
+        <th>Key</th>
+        <th>Name</th>
+		<th th:if="${(entity != null and entity.hasDescription()) or (entityList != null and !#lists.isEmpty(entityList) and entityList[0].hasDescription())}">Description</th>        
+    </tr>
+    <!-- If an entityList is provided and not empty, iterate through each entity -->
+    <tr th:each="entity : ${entityList}" th:if="${entityList != null and !#lists.isEmpty(entityList)}">
+        <td th:text="${entity.entityPK}"></td>
+        <td th:text="${entity.entityName}"></td>
+        <td th:if="${entity.hasDescription()}" th:text="${entity.entityDescription}"></td>
+        <td>
+            <a th:href="@{${editEntityPath}(pk=${entity.entityPK})}" th:text="'Edit'"></a>
+        </td>
+        <td>
+            <a href="#" th:text="'Delete'" th:data-entity-pk="${entity.entityPK}" onclick="confirmDelete(this)"></a>
+        </td>
+    </tr>
+    <!-- If no entityList is provided, display a single entity -->
+    <tr th:if="${entityList == null or #lists.isEmpty(entityList)}">
+        <td th:text="${entity.entityPK}"></td>
+        <td th:text="${entity.entityName}"></td>
+        <td th:if="${entity.hasDescription()}" th:text="${entity.entityDescription}"></td>
+        <td>
+            <a th:href="@{${editEntityPath}(pk=${entity.entityPK})}" th:text="'Edit'"></a>
+        </td>
+        <td>
+            <a href="#" th:text="'Delete'" th:data-entity-pk="${entity.entityPK}" onclick="confirmDelete(this)"></a>
+        </td>
+    </tr>
+</table>
+
 	<br>
 	<br>
 	<footer>

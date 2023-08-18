@@ -37,8 +37,8 @@ public class BeingWeaknessServiceImpl implements BeingWeaknessService {
 
 	@Override
 	public BeingWeakness getBeingWeaknessById(KeyBeingWeakness beingWeaknessPK) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return beingWeaknessDao.findById(beingWeaknessPK).orElse(null);
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public class BeingWeaknessServiceImpl implements BeingWeaknessService {
 	@Override
 	public List<BeingWeakness> getBeingWeaknessByWeaknessId(int weaknessPK) {
 
-		List<BeingWeakness> beingAbilities = beingWeaknessDao.findByBeing(weaknessPK);
+		List<BeingWeakness> beingAbilities = beingWeaknessDao.findByWeakness(weaknessPK);
 
 		if(beingAbilities.size() >0) {
 

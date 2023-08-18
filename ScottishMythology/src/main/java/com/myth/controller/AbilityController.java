@@ -26,7 +26,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.myth.entity.*;
 import com.myth.entity.composite.GenericEntity;
+import com.myth.entity.junction.BeingAbility;
+import com.myth.entity.junction.KeyBeingAbility;
+import com.myth.service.BeingService;
 import com.myth.service.ScottishMythologyService;
+import com.myth.service.junction.BeingAbilityService;
 import com.myth.service.micro.*;
 
 @Controller
@@ -36,6 +40,10 @@ public class AbilityController {
 	private AbilityService abilityService;
 	@Autowired
 	private ScottishMythologyService scottishMythologyService;
+	@Autowired
+	private BeingService beingService;
+	@Autowired 
+	private BeingAbilityService beingAbilityService;
 	
 	// Model Attributes
 	
@@ -92,6 +100,7 @@ public class AbilityController {
 		
 		
 		ModelAndView modelAndView = new ModelAndView();
+		
 		// If the input has errors it wont be submitted
 		if(results.hasErrors()) {
 			return new ModelAndView("entity/create-entity", "entity", entity);
@@ -106,6 +115,10 @@ public class AbilityController {
 			// Then call the service to create it
 			abilityService.createAbility(ability);
 			message = ability.getAbilityName() + " successfully added to the database.";
+			
+			Ability createdAbility = abilityService.getAbilityByName(ability.getAbilityName());
+			entity = new GenericEntity(createdAbility.getAbilityPK(), createdAbility.getAbilityName());
+			
 		}
 		else {
 			message = "An error occurred. Ability not added to the database.";
@@ -115,7 +128,7 @@ public class AbilityController {
 		modelAndView.addObject("message", message);
 		// Adding all possible necessary links
 		modelAndView = scottishMythologyService.setUpLinks("ability", "abilities", modelAndView);
-		
+		modelAndView.addObject("entity", entity);
 		modelAndView.setViewName("entity/entity-output");
 		
 		return modelAndView;
@@ -160,8 +173,36 @@ public class AbilityController {
 		}
 		else {
 			
-			modelAndView.addObject("message", "No abilities were found for " + request.getParameter("name"));
-			modelAndView.setViewName("entity/show-entity");
+			Being being = beingService.getBeingByName(request.getParameter("name"));
+			
+			if(being !=null) {
+				
+				int id = being.getBeingPK();
+				List<BeingAbility> beingAbilities = beingAbilityService.getBeingAbilityByBeingId(id);
+				List<Ability> abilityList = new ArrayList<Ability>();
+				
+				for(BeingAbility beingAbility: beingAbilities) {
+					
+					KeyBeingAbility key = beingAbility.getId();
+					int abilityKey = key.getAbilityPK();
+					
+					Ability foundAbility = abilityService.getAbilityById(abilityKey);
+					
+					abilityList.add(foundAbility);
+				}
+				
+				List<GenericEntity> entityList = convertToGenericEntityList(abilityList);
+				
+				modelAndView.addObject("entityList", entityList);
+				modelAndView.addObject("message", "Ability results for " + request.getParameter("name"));
+				modelAndView.setViewName("entity/show-entity");
+				return modelAndView;
+			}
+			else {
+			
+				modelAndView.addObject("message", "No abilities were found for " + request.getParameter("name"));
+				modelAndView.setViewName("entity/show-entity");
+			}
 		}
 		
 		return modelAndView;

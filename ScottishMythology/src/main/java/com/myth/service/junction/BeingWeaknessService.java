@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.myth.entity.junction.BeingWeakness;
 import com.myth.entity.junction.KeyBeingWeakness;
-import com.myth.service.EntityService;
 
 public interface BeingWeaknessService{
 

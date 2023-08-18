@@ -16,6 +16,9 @@ public interface ScottishMythologyService {
 	List<BeingComposite> getAllBeingRecords();
 	BeingComposite getBeingRecordById(int beingPK);
 	BeingComposite getBeingRecordByName(String beingName);
+	List<BeingComposite> getBeingRecordByFaction(int factionPK);
+	List<BeingComposite> getBeingRecordByGender(int genderPK);
+	List<BeingComposite> getBeingRecordBySpecies(int speciesPK);
 
 	// Update
 	Boolean updateBeingRecord(BeingComposite beingComposite);
@@ -25,6 +28,7 @@ public interface ScottishMythologyService {
 
 	// Links for controllers
 	ModelAndView setUpLinks(String entity, String entities, ModelAndView modelAndView);
+
 
 	
 

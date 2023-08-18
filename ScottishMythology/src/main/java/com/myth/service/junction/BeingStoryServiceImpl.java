@@ -37,8 +37,8 @@ public class BeingStoryServiceImpl implements BeingStoryService {
 
 	@Override
 	public BeingStory getBeingStoryById(KeyBeingStory beingStoryPK) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return beingStoryDao.findById(beingStoryPK).orElse(null);
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public class BeingStoryServiceImpl implements BeingStoryService {
 	@Override
 	public List<BeingStory> getBeingStoryByStoryId(int storyPK) {
 
-		List<BeingStory> beingAbilities = beingStoryDao.findByBeing(storyPK);
+		List<BeingStory> beingAbilities = beingStoryDao.findByStory(storyPK);
 
 		if(beingAbilities.size() >0) {
 

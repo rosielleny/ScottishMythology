@@ -22,9 +22,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.myth.entity.Being;
+import com.myth.entity.Faction;
 import com.myth.entity.Gender;
 import com.myth.entity.Gender;
 import com.myth.entity.composite.GenericEntity;
+import com.myth.service.BeingService;
 import com.myth.service.ScottishMythologyService;
 import com.myth.service.micro.GenderService;
 
@@ -35,6 +38,8 @@ public class GenderController {
 	private GenderService genderService;
 	@Autowired
 	private ScottishMythologyService scottishMythologyService;
+	@Autowired
+	private BeingService beingService;
 	
 	// Model Attributes
 	
@@ -105,6 +110,9 @@ public class GenderController {
 			// Then call the service to create it
 			genderService.createGender(gender);
 			message = gender.getGenderType() + " successfully added to the database.";
+			
+			Gender createdGender = genderService.getGenderByName(gender.getGenderType());
+			entity = new GenericEntity(createdGender.getGenderPK(), createdGender.getGenderType());
 		}
 		else {
 			message = "An error occurred. Gender not added to the database.";
@@ -114,7 +122,7 @@ public class GenderController {
 		modelAndView.addObject("message", message);
 		// Adding all possible necessary links
 		modelAndView = scottishMythologyService.setUpLinks("gender", "genders", modelAndView);
-		
+		modelAndView.addObject("entity", entity);
 		modelAndView.setViewName("entity/entity-output");
 		
 		return modelAndView;
@@ -159,8 +167,25 @@ public class GenderController {
 		}
 		else {
 			
-			modelAndView.addObject("message", "No genders were found for " + request.getParameter("name"));
-			modelAndView.setViewName("entity/show-entity");
+			Being being = beingService.getBeingByName(request.getParameter("name"));
+			
+			if(being !=null) {
+				
+				int id = being.getBeingGender();
+	
+				Gender genderBeing = genderService.getGenderById(id);
+				GenericEntity entity = new GenericEntity(genderBeing.getGenderPK(), genderBeing.getGenderType());
+				
+				modelAndView.addObject("entity", entity);
+				modelAndView.addObject("message", "Gender results for " + request.getParameter("name"));
+				modelAndView.setViewName("entity/show-entity");
+				return modelAndView;
+			}
+			else {
+			
+				modelAndView.addObject("message", "No genders were found for " + request.getParameter("name"));
+				modelAndView.setViewName("entity/show-entity");
+			}
 		}
 		
 		return modelAndView;

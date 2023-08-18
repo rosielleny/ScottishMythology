@@ -91,6 +91,7 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 
 	}
 
+	// READ
 	@Override
 	public List<BeingComposite> getAllBeingRecords() {
 
@@ -130,16 +131,78 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 		return convertToComposite(being);
 	}
 	
+	@Override 
+	public List<BeingComposite> getBeingRecordByFaction(int factionPK){
+		
+		List<Being> beingList = beingService.getBeingByFaction(factionPK);
+		List<BeingComposite> beingRecordList = new ArrayList<BeingComposite>();
+		
+		for(Being being: beingList) {
+			
+			BeingComposite beingComposite = convertToComposite(being);
+			
+			beingRecordList.add(beingComposite);	
+		}
+		
+		return beingRecordList;
+	}
+	@Override 
+	public List<BeingComposite> getBeingRecordByGender(int genderPK){
+		
+		List<Being> beingList = beingService.getBeingByFaction(genderPK);
+		List<BeingComposite> beingRecordList = new ArrayList<BeingComposite>();
+		
+		for(Being being: beingList) {
+			
+			BeingComposite beingComposite = convertToComposite(being);
+			
+			beingRecordList.add(beingComposite);	
+		}
+		
+		return beingRecordList;
+	}
+	@Override 
+	public List<BeingComposite> getBeingRecordBySpecies(int speciesPK){
+		
+		List<Being> beingList = beingService.getBeingByFaction(speciesPK);
+		List<BeingComposite> beingRecordList = new ArrayList<BeingComposite>();
+		
+		for(Being being: beingList) {
+			
+			BeingComposite beingComposite = convertToComposite(being);
+			
+			beingRecordList.add(beingComposite);	
+		}
+		
+		return beingRecordList;
+	}
+	
+	// UPDATE
+	
 	//@Transactional
 	@Override
 	public Boolean updateBeingRecord(BeingComposite beingComposite) {
 
 		try {
 			boolean abilityUpdated = false;
+			boolean abilityDeleted = true;
+			boolean abilityAdded = true;
+			
 			boolean locationsUpdated = false;
+			boolean locationDeleted = true;
+			boolean locationAdded = true;
+			
 			boolean storiesUpdated = false;
+			boolean storyDeleted = true;
+			boolean storyAdded = true;
+			
 			boolean symbolismUpdated = false;
+			boolean symbolDeleted = true;
+			boolean symbolAdded = true;
+			
 			boolean weaknessesUpdated = false;
+			boolean weaknessDeleted = true;
+			boolean weaknessAdded = true;
 
 			BeingComposite oldBC = getBeingRecordById(beingComposite.getBeingPK());
 			Being being = getBeingFromComposite(beingComposite);
@@ -164,10 +227,21 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 						Ability ability = abilityService.getAbilityByName(i);
 						int id = ability.getAbilityPK();
 						KeyBeingAbility key = new KeyBeingAbility(oldBC.getBeingPK(), id);
-						beingAbilityService.deleteBeingAbility(key);
+						
+						abilityDeleted = beingAbilityService.deleteBeingAbility(key);
 					}
 				}
-				abilityUpdated = createUpdateBeingAbility(beingComposite); // Handles entries that have been added
+				
+				for(String i: beingComposite.getBeingAbilities()) {
+					
+					if(!oldBC.getBeingAbilities().contains(i)) {
+						
+						abilityAdded = createUpdateBeingAbility(beingComposite);
+						break;
+						
+					}
+				}
+				abilityUpdated = abilityAdded && abilityDeleted; // Handles entries that have been added
 				
 			}else if(oldBC.getBeingAbilities().equals(beingComposite.getBeingAbilities())) {
 				
@@ -183,10 +257,20 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 						Location location = locationService.getLocationByName(i);
 						int id = location.getLocationPK();
 						KeyBeingLocation key = new KeyBeingLocation(oldBC.getBeingPK(), id);
-						beingLocationService.deleteBeingLocation(key);
+						locationDeleted = beingLocationService.deleteBeingLocation(key);
 					}
 				}
-				locationsUpdated = createUpdateBeingLocation(beingComposite);
+				
+				for(String i: beingComposite.getBeingLocations()) {
+					
+					if(!oldBC.getBeingLocations().contains(i)) {
+						
+						locationAdded = createUpdateBeingLocation(beingComposite);
+						break;
+						
+					}
+				}
+				locationsUpdated = locationAdded && locationDeleted;
 				
 			}else if(oldBC.getBeingLocations().equals(beingComposite.getBeingLocations())) {
 				
@@ -202,10 +286,20 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 						Story story = storyService.getStoryByName(i);
 						int id = story.getStoryPK();
 						KeyBeingStory key = new KeyBeingStory(oldBC.getBeingPK(), id);
-						beingStoryService.deleteBeingStory(key);
+						storyDeleted = beingStoryService.deleteBeingStory(key);
 					}
 				}
-				storiesUpdated = createUpdateBeingStory(beingComposite);
+				
+				for(String i: beingComposite.getBeingStories()) {
+					
+					if(!oldBC.getBeingStories().contains(i)) {
+						
+						storyAdded = createUpdateBeingStory(beingComposite);
+						break;
+						
+					}
+				}
+				storiesUpdated = storyAdded && storyDeleted;
 				
 			}else if(oldBC.getBeingStories().equals(beingComposite.getBeingStories())) {
 				
@@ -221,10 +315,20 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 						Symbol symbol = symbolService.getSymbolByName(i);
 						int id = symbol.getSymbolPK();
 						KeyBeingSymbolism key = new KeyBeingSymbolism(oldBC.getBeingPK(), id);
-						beingSymbolismService.deleteBeingSymbolism(key);
+						symbolDeleted = beingSymbolismService.deleteBeingSymbolism(key);
 					}
 				}
-				symbolismUpdated = createUpdateBeingSymbol(beingComposite);
+				
+				for(String i: beingComposite.getBeingSymbolism()) {
+					
+					if(!oldBC.getBeingSymbolism().contains(i)) {
+						
+						symbolAdded = createUpdateBeingSymbol(beingComposite);
+						break;
+						
+					}
+				}
+				symbolismUpdated = symbolAdded && symbolDeleted;
 				
 			}else if(oldBC.getBeingSymbolism().equals(beingComposite.getBeingSymbolism())) {
 				
@@ -240,15 +344,32 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 						Weakness weakness = weaknessService.getWeaknessByName(i);
 						int id = weakness.getWeaknessPK();
 						KeyBeingWeakness key = new KeyBeingWeakness(oldBC.getBeingPK(), id);
-						beingWeaknessService.deleteBeingWeakness(key);
+						weaknessDeleted = beingWeaknessService.deleteBeingWeakness(key);
 					}
 				}
-				weaknessesUpdated = createUpdateBeingWeakness(beingComposite);
+				
+				for(String i: beingComposite.getBeingWeaknesses()) {
+					
+					if(!oldBC.getBeingWeaknesses().contains(i)) {
+						
+						weaknessAdded = createUpdateBeingWeakness(beingComposite);
+						break;
+						
+					}
+				}
+				weaknessesUpdated = weaknessAdded && weaknessDeleted;
 				
 			}else if(oldBC.getBeingWeaknesses().equals(beingComposite.getBeingWeaknesses())) {
 				
 				weaknessesUpdated = true;
 			}
+			
+			System.out.println("Ability: " + abilityUpdated);
+			System.out.println("Location: " + locationsUpdated);
+			System.out.println("Story: " + storiesUpdated);
+			System.out.println("Symbol: " + symbolismUpdated);
+			System.out.println("Weakness: " + weaknessesUpdated);
+			System.out.println("Being: " + beingUpdated);
 			
 			if(abilityUpdated && locationsUpdated && storiesUpdated && symbolismUpdated && weaknessesUpdated && beingUpdated) {
 				return true;
@@ -597,7 +718,7 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 		modelAndView.addObject("entityPath", "/" + entity + "/save-new");
 		modelAndView.addObject("entitySaveUpdatePath", "/" + entity + "/save-edit");
 		
-		String entityUpper = entity.replace(entity.charAt(0), Character.toUpperCase(entity.charAt(0)));
+		String entityUpper = Character.toUpperCase(entity.charAt(0)) + entity.substring(1);
 		
 		modelAndView.addObject("label", entityUpper + " Name:");
 		modelAndView.addObject("entityType", entityUpper);
