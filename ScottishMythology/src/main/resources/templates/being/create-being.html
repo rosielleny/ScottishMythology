@@ -88,16 +88,18 @@
 
 	<form enctype="multipart/form-data" th:object="${being}" th:action="@{${entityPath}}" method="post">
 		
-		<label class="createInput" th:text="${#request.getAttribute('label')}">Label Text:</label>
+		<label class="createInput" th:text="${#request.getAttribute('label')}" required>Label Text:</label>
 		<input type="text" th:field="*{beingName}" id="beingNameInput">
 		<div id="message"></div>
-		<span id="nameValidationError" th:if="${#fields.hasErrors('beingName')}" th:errors="*{beingName}">Cannot be blank</span>
+		<span id="nameValidationError" th:if="${#fields.hasErrors('beingName')}" >Cannot be blank</span>
 	
 		<br><br>
 		<label class="createInput" >
 			Description:
 			<textarea th:field="*{beingDescription}" id="description" maxlength="255" rows="5" cols="40" wrap="soft" required></textarea>
 		</label>
+		<span id="descriptionValidationError" th:if="${#fields.hasErrors('beingDescription')}" >Cannot be blank</span>
+
 		<br><br>
 		<label class="createInput" >
 			Gender:
@@ -120,6 +122,9 @@
     		<input name="beingAbilitySearch" type="text" id="abilityInput" list="abilityChoice" placeholder="add an ability">
     		<button type="button" class="addButton" data-section="ability">Add</button>
     		<br>
+    		<span id="abilityValidationError" th:if="${#fields.hasErrors('beingAbilities')}">Cannot be blank. If the being has no abilities please select 'None' and remember to click Add.</span>
+
+    		<br>
     		Abilities:
     		<div id="listToAdd">
     		<ul id="abilityList">
@@ -134,13 +139,15 @@
 		<label class="createInput" >
 			Add a weakness:
     		<datalist id="weaknessChoice">
-        		<!-- Loops through the abilities list and creates options-->
+        		<!-- Loops through the weaknesses list and creates options-->
         		<th:block th:each="weakness : ${weaknesses}">
             		<option th:value="${weakness}" th:text="${weakness}"></option>
         		</th:block>
     		</datalist>
     		<input name="beingWeaknessSearch" type="text" id="weaknessInput" list="weaknessChoice" placeholder="add a weakness">
     		<button type="button" class="addButton" data-section="weakness">Add</button>
+    		<br>
+    		<span id="weaknessValidationError" th:if="${#fields.hasErrors('beingWeaknesses')}">Cannot be blank. If the being has no weaknesses please select 'None' and remember to click Add.</span>
     		<br>
     		Weaknesses:
     		<div id="weaknessListToAdd">
@@ -156,13 +163,15 @@
 		<label class="createInput" >
 			Add a symbol:
     		<datalist id="symbolChoice">
-        		<!-- Loops through the abilities list and creates options-->
+        		<!-- Loops through the symbols list and creates options-->
         		<th:block th:each="symbol : ${symbols}">
             		<option th:value="${symbol}" th:text="${symbol}"></option>
         		</th:block>
     		</datalist>
     		<input name="beingSymbolSearch" type="text" id="symbolInput" list="symbolChoice" placeholder="add a symbol">
     		<button type="button" data-section="symbol" class="addButton">Add</button>
+    		<br>
+    		<span id="symbolValidationError" th:if="${#fields.hasErrors('beingSymbolism')}">Cannot be blank. If the being has no symbols please select 'None' and remember to click Add.</span>
     		<br>
     		Symbols:
     		<div id="symbolListToAdd">
@@ -177,13 +186,15 @@
 		<label class="createInput" >
 			Add a location:
     		<datalist id="locationChoice">
-        		<!-- Loops through the abilities list and creates options-->
+        		<!-- Loops through the location list and creates options-->
         		<th:block th:each="location : ${locations}">
             		<option th:value="${location}" th:text="${location}"></option>
         		</th:block>
     		</datalist>
     		<input name="beingLocationSearch" type="text" id="locationInput" list="locationChoice" placeholder="add a location">
     		<button type="button" data-section="location" class="addButton">Add</button>
+    		<br>
+    		<span id="locationValidationError" th:if="${#fields.hasErrors('beingLocations')}">Cannot be blank. If the being has no locations please select 'None' and remember to click Add.</span>
     		<br>
     		Locations:
     		<div id="locationListToAdd">
@@ -198,13 +209,15 @@
 		<label class="createInput" >
 			Add a story:
     		<datalist id="storyChoice">
-        		<!-- Loops through the abilities list and creates options-->
+        		<!-- Loops through the stories list and creates options-->
         		<th:block th:each="story : ${stories}">
             		<option th:value="${story}" th:text="${story}"></option>
         		</th:block>
     		</datalist>
     		<input name="beingStorySearch" type="text" id="storyInput" list="storyChoice" placeholder="add a story">
     		<button type="button" data-section="story" class="addButton">Add</button>
+    		<br>
+    		<span id="storyValidationError" th:if="${#fields.hasErrors('beingStories')}" >Cannot be blank. If the being has no abilities please select 'None' and remember to click Add.</span>
     		<br>
     		Stories:
     		<div id="storyListToAdd">
@@ -245,6 +258,66 @@
 <script th:inline="javascript">
 
 document.addEventListener("DOMContentLoaded", function() {
+	
+		/* Creating hidden inputs for pre-existing entries in:
+	*	- Abilities
+	*	- Weaknesses
+	*	– Symbolism
+	*	– Locations
+	*	– Stories */
+	
+	function createHiddenInputForExistingItems(sectionName) {
+        const sectionList = document.getElementById(`${sectionName}List`);
+        const listItems = sectionList.querySelectorAll('li');
+
+        listItems.forEach(item => {
+            const value = item.querySelector('span').textContent;
+            const uniqueId = Date.now() + Math.floor(Math.random() * 1000);  // Adding randomness to avoid id collisions
+
+            let hiddenInput = document.createElement("input");
+            hiddenInput.type = "hidden";
+            
+            if(sectionName == "ability"){
+            	hiddenInput.name = `beingAbilities[]`; 
+            	} // Adjust the name if you expand this for other sections
+            else if(sectionName == "weakness"){
+            	hiddenInput.name = `beingWeaknesses[]`; 
+            	}
+            if(sectionName == "symbol"){
+            	hiddenInput.name = `beingSymbolism[]`; 
+            	}
+            if(sectionName == "location"){
+            	hiddenInput.name = `beingLocations[]`; 
+            	}
+            if(sectionName == "story"){
+            	hiddenInput.name = `beingStories[]`; 
+            	}
+            
+            hiddenInput.value = value;
+            hiddenInput.setAttribute('data-id', uniqueId);
+
+            // Attach the hidden input to the form
+            document.querySelector('form').appendChild(hiddenInput);
+
+            // Also set the uniqueId as data-id for the li, so remove logic can sync properly
+            item.setAttribute('data-id', uniqueId);
+        });
+    }
+
+    // Call the above function for abilities on page load
+    createHiddenInputForExistingItems('ability');
+	createHiddenInputForExistingItems('weakness');
+	createHiddenInputForExistingItems('symbol');
+	createHiddenInputForExistingItems('location');
+	createHiddenInputForExistingItems('story');
+	
+	/* Creating new entries for:
+	*	- Abilities
+	*	- Weaknesses
+	*	– Symbolism
+	*	– Locations
+	*	– Stories */
+	
 	function initialiseEntitySection(sectionName){
 
 		const addButton = document.querySelector(`[data-section="${sectionName}"]`);
@@ -287,20 +360,18 @@ document.addEventListener("DOMContentLoaded", function() {
         					let hiddenInput = document.createElement("input");
     						hiddenInput.type = "hidden";
     						
-    						if(sectionName == "location"){
-    							hiddenInput.name = `beingLocations[]`; 
-    						}
-    						else if(sectionName == "story"){
-    							hiddenInput.name = `beingStories[]`; 
-    						}
-    						else if(sectionName == "ability"){
+    						
+    						if(sectionName == "ability"){
     							hiddenInput.name = `beingAbilities[]`; 
+
     						}
     						else if(sectionName == "weakness"){
     							hiddenInput.name = `beingWeaknesses[]`; 
+
     							}
     						else if(sectionName == "symbol"){
     							hiddenInput.name = `beingSymbolism[]`; 
+
     						}
     						
     						hiddenInput.value = selectedSection;
@@ -308,6 +379,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
     						// Attach the hidden input to the form
     						document.querySelector('form').appendChild(hiddenInput);
+    						
+    						
     						
                     	} else {
                        		alert(`There was an error adding the ${sectionName} to the database.`);
@@ -320,7 +393,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 	}else if(sectionName == "location" || sectionName == "story"){
 						
 						const description = prompt(`Please enter a description for the new ${sectionName}:`);
-  						fetch('/location/add', {
+						var functionLink = '/'+ sectionName + '/add';
+  						fetch(functionLink, {
   							method: 'POST',
   							headers: {
     						'Content-Type': 'application/json' 
@@ -347,25 +421,21 @@ document.addEventListener("DOMContentLoaded", function() {
     						
     						if(sectionName == "location"){
     							hiddenInput.name = `beingLocations[]`; 
+
     						}
     						else if(sectionName == "story"){
     							hiddenInput.name = `beingStories[]`; 
+
     						}
-    						else if(sectionName == "ability"){
-    							hiddenInput.name = `beingAbilities[]`; 
-    						}
-    						else if(sectionName == "weakness"){
-    							hiddenInput.name = `beingWeaknesses[]`; 
-    							}
-    						else if(sectionName == "symbol"){
-    							hiddenInput.name = `beingSymbolism[]`; 
-    						}
+    					
     						
     						hiddenInput.value = selectedSection;
     						hiddenInput.setAttribute('data-id', uniqueId);
 
     						// Attach the hidden input to the form
     						document.querySelector('form').appendChild(hiddenInput);
+    						
+    						
     						
                     	} else {
                        		alert(`There was an error adding the ${sectionName} to the database.`);
@@ -386,29 +456,37 @@ document.addEventListener("DOMContentLoaded", function() {
     						
     						if(sectionName == "location"){
     							hiddenInput.name = `beingLocations[]`; 
+    		
     						}
     						else if(sectionName == "story"){
     							hiddenInput.name = `beingStories[]`; 
+
     						}
     						else if(sectionName == "ability"){
     							hiddenInput.name = `beingAbilities[]`; 
+    
     						}
     						else if(sectionName == "weakness"){
     							hiddenInput.name = `beingWeaknesses[]`; 
+
     							}
     						else if(sectionName == "symbol"){
     							hiddenInput.name = `beingSymbolism[]`; 
+    							
     						}
     						
-    						hiddenInput.value = selectedSection;
+    				hiddenInput.value = selectedSection;
 
     						// Attach the hidden input to the form
-    						document.querySelector('form').appendChild(hiddenInput);
+    				document.querySelector('form').appendChild(hiddenInput);
+    						
+    				
         		
 			}
 
     	}
 	});
+
 
 	sectionList.addEventListener('click', function(event) {
     	if (event.target.classList.contains('remove-button')) {

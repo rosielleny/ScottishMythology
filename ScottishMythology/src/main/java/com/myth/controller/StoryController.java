@@ -308,10 +308,20 @@ public class StoryController {
 	@PostMapping("story/add")
 	public ResponseEntity<Map<String, Boolean>> sneakyAddStory(@RequestBody Story story) {
 		Map<String, Boolean> response = new HashMap<>();
+		
+		System.out.println("sneakyAddStory found!");
+		
 		try {
-	        storyService.createStory(story);
-	        response.put("success", true);
-	        return ResponseEntity.ok(response);
+	        
+	        if(storyService.createStory(story) != null) {
+	        	response.put("success", true);
+	        	return ResponseEntity.ok(response);
+	        }
+	        else {
+	        	
+	        	response.put("success", false);
+		        return ResponseEntity.badRequest().body(response);
+	        }
 	    } catch (Exception e) {
 	        response.put("success", false);
 	        return ResponseEntity.badRequest().body(response);

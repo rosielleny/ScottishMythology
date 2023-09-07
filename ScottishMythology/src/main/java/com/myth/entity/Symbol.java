@@ -41,6 +41,12 @@ public class Symbol {
 	public void setSymbolName(String symbolName) {
 		this.symbolName = symbolName;
 	}
+
+	@Override
+	public String toString() {
+		return "Symbol [symbolPK=" + symbolPK + ", symbolName=" + symbolName + "]";
+	}
+	
 	
 	
 }

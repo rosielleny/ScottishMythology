@@ -110,15 +110,15 @@
         </td>
     </tr>
     <!-- If no entityList is provided, display a single entity -->
-    <tr th:if="${entityList == null or #lists.isEmpty(entityList)}">
-        <td th:text="${entity.entityPK}"></td>
-        <td th:text="${entity.entityName}"></td>
-        <td th:if="${entity.hasDescription()}" th:text="${entity.entityDescription}"></td>
+    <tr th:if="${entityList == null or #lists.isEmpty(entityList)} and entity != null">
+        <td th:text="${entity?.entityPK}"></td>
+        <td th:text="${entity?.entityName}"></td>
+        <td th:if="${entity?.hasDescription()}" th:text="${entity?.entityDescription}"></td>
         <td>
-            <a th:href="@{${editEntityPath}(pk=${entity.entityPK})}" th:text="'Edit'"></a>
+            <a th:href="@{${editEntityPath}(pk=${entity?.entityPK})}" th:text="'Edit'"></a>
         </td>
         <td>
-            <a href="#" th:text="'Delete'" th:data-entity-pk="${entity.entityPK}" onclick="confirmDelete(this)"></a>
+            <a href="#" th:text="'Delete'" th:data-entity-pk="${entity?.entityPK}" onclick="confirmDelete(this)"></a>
         </td>
     </tr>
 </table>

@@ -218,7 +218,7 @@ public class ScottishMythologyController {
 		ModelAndView modelAndView = new ModelAndView();
 		// If the input has errors it wont be submitted
 		if(results.hasErrors()) {
-			return new ModelAndView("being/create-entity", "being", being);
+			return new ModelAndView("being/create-being", "being", being);
 		}
 
 		String message = null;

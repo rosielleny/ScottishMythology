@@ -20,7 +20,8 @@ public class AbilityServiceImpl implements AbilityService {
 	public Ability createAbility(Ability ability) {
 		
 		if(abilityDao.save(ability) != null) {
-			return ability;
+			Ability createdAbility = getAbilityByName(ability.getAbilityName());
+			return createdAbility;
 		} 
 		else {
 			return null;

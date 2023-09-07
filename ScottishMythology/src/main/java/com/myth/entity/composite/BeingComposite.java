@@ -1,39 +1,21 @@
 package com.myth.entity.composite;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.Lob;
+import javax.validation.constraints.NotNull;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.myth.entity.Ability;
 import com.myth.entity.Being;
-import com.myth.entity.Location;
-import com.myth.entity.Story;
-import com.myth.entity.Symbol;
-import com.myth.entity.Weakness;
-import com.myth.entity.junction.BeingAbility;
-import com.myth.service.junction.BeingAbilityService;
-import com.myth.service.junction.BeingLocationService;
-import com.myth.service.junction.BeingStoryService;
-import com.myth.service.junction.BeingSymbolismService;
-import com.myth.service.junction.BeingWeaknessService;
-import com.myth.service.micro.AbilityService;
-import com.myth.service.micro.FactionService;
-import com.myth.service.micro.GenderService;
-import com.myth.service.micro.LocationService;
-import com.myth.service.micro.SpeciesService;
-import com.myth.service.micro.StoryService;
-import com.myth.service.micro.SymbolService;
-import com.myth.service.micro.WeaknessService;
+
 
 public class BeingComposite {
 		
 	private int beingPK;
+	@NotNull
 	private String beingName;
 	private int beingSpeciesPK;
+	@NotNull
 	private String beingDescription;
 	private int beingGenderPK;
 	@Lob
@@ -45,10 +27,15 @@ public class BeingComposite {
 	private String beingGender;
 	private String beingFaction;
 	
+	@NotNull
 	private List<String> beingAbilities;
+	@NotNull
 	private List<String> beingWeaknesses;
+	@NotNull
 	private List<String> beingSymbolism;
+	@NotNull
 	private List<String> beingStories;
+	@NotNull
 	private List<String> beingLocations;
 	
 	

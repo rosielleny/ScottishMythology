@@ -34,6 +34,8 @@ public class StoryServiceImpl implements StoryService {
 
 	    ResponseEntity<Story> responseEntity = restTemplate.postForEntity(url, requestEntity, Story.class);
 
+	    System.out.println("Create story method in main app has been reached.");
+	    
 	    if (responseEntity.getStatusCode() == HttpStatus.CREATED) {
 	        return responseEntity.getBody();
 	    } else {

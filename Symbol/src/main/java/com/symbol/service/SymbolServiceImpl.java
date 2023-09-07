@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.symbol.entity.Symbol;
 import com.symbol.dao.SymbolDao;
 import com.symbol.entity.Symbol;
 
@@ -20,7 +21,8 @@ public class SymbolServiceImpl implements SymbolService {
 	public Symbol createSymbol(Symbol symbol) {
 		
 		if(symbolDao.save(symbol) != null) {
-			return symbol;
+			Symbol createdSymbol = getSymbolByName(symbol.getSymbolName());
+			return createdSymbol;
 		} 
 		else {
 			return null;

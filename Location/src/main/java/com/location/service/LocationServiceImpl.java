@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.location.entity.Location;
 import com.location.dao.LocationDao;
 import com.location.entity.Location;
 
@@ -20,7 +21,8 @@ public class LocationServiceImpl implements LocationService {
 	public Location createLocation(Location location) {
 		
 		if(locationDao.save(location) != null) {
-			return location;
+			Location createdLocation = getLocationByName(location.getLocationName());
+			return createdLocation;
 		} 
 		else {
 			return null;

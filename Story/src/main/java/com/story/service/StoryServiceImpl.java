@@ -5,22 +5,23 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.story.dao.StoryDao;
 import com.story.entity.Story;
+import com.story.dao.StoryDao;
 
 @Service
 public class StoryServiceImpl implements StoryService {
 
 	@Autowired
-	private StoryDao abilityDao;
+	private StoryDao storyDao;
 	
 	// Create
 	
 	@Override
-	public Story createStory(Story ability) {
+	public Story createStory(Story story) {
 		
-		if(abilityDao.save(ability) != null) {
-			return ability;
+		if(storyDao.save(story) != null) {
+			Story createdStory = getStoryByName(story.getStoryName());
+			return createdStory;
 		} 
 		else {
 			return null;
@@ -33,32 +34,32 @@ public class StoryServiceImpl implements StoryService {
 	@Override
 	public List<Story> getAllStory() {
 		
-		return abilityDao.findAll();
+		return storyDao.findAll();
 	}
 
 	@Override
-	public Story getStoryById(int abilityPK) {
+	public Story getStoryById(int storyPK) {
 		
-		Story ability = abilityDao.findById(abilityPK).orElse(null);
-		return ability;
+		Story story = storyDao.findById(storyPK).orElse(null);
+		return story;
 	}
 
 	@Override
-	public Story getStoryByName(String abilityName) {
+	public Story getStoryByName(String storyName) {
 		
-		return abilityDao.findByName(abilityName);
+		return storyDao.findByName(storyName);
 	}
 
 	// Update
 	
 	@Override
-	public Boolean updateStory(Story ability) {
+	public Boolean updateStory(Story story) {
 		
-		Story abilityExists = getStoryById(ability.getStoryPK());
+		Story storyExists = getStoryById(story.getStoryPK());
 		
-		if(abilityExists !=null) {
+		if(storyExists !=null) {
 			
-			abilityDao.save(ability);
+			storyDao.save(story);
 			return true;
 			
 		}
@@ -68,13 +69,13 @@ public class StoryServiceImpl implements StoryService {
 	// Delete
 	
 	@Override
-	public Boolean deleteStory(int abilityPK) {
+	public Boolean deleteStory(int storyPK) {
 		
-		Story ability = getStoryById(abilityPK);
+		Story story = getStoryById(storyPK);
 		
-		if(ability !=null) {
+		if(story !=null) {
 			
-			abilityDao.deleteById(abilityPK);
+			storyDao.deleteById(storyPK);
 			return true;
 			
 		}

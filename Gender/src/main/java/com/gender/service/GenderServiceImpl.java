@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.gender.entity.Gender;
 import com.gender.dao.GenderDao;
 import com.gender.entity.Gender;
 
@@ -20,7 +21,8 @@ public class GenderServiceImpl implements GenderService {
 	public Gender createGender(Gender gender) {
 		
 		if(genderDao.save(gender) != null) {
-			return gender;
+			Gender createdGender = getGenderByType(gender.getGenderType());
+			return createdGender;
 		} 
 		else {
 			return null;

@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.faction.dao.FactionDao;
 import com.faction.entity.Faction;
+import com.faction.dao.FactionDao;
 
 @Service
 public class FactionServiceImpl implements FactionService {
@@ -20,7 +20,8 @@ public class FactionServiceImpl implements FactionService {
 	public Faction createFaction(Faction faction) {
 		
 		if(factionDao.save(faction) != null) {
-			return faction;
+			Faction createdFaction = getFactionByName(faction.getFactionName());
+			return createdFaction;
 		} 
 		else {
 			return null;

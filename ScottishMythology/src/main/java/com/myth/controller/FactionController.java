@@ -185,6 +185,7 @@ public class FactionController {
 			}
 			else {
 			
+				modelAndView.addObject("entity", null);
 				modelAndView.addObject("message", "No factions were found for " + request.getParameter("name"));
 				modelAndView.setViewName("entity/show-entity");
 			}

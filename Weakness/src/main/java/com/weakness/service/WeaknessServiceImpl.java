@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.weakness.dao.WeaknessDao;
 import com.weakness.entity.Weakness;
+import com.weakness.dao.WeaknessDao;
 
 @Service
 public class WeaknessServiceImpl implements WeaknessService {
@@ -20,7 +20,8 @@ public class WeaknessServiceImpl implements WeaknessService {
 	public Weakness createWeakness(Weakness weakness) {
 		
 		if(weaknessDao.save(weakness) != null) {
-			return weakness;
+			Weakness createdWeakness = getWeaknessByName(weakness.getWeaknessName());
+			return createdWeakness;
 		} 
 		else {
 			return null;

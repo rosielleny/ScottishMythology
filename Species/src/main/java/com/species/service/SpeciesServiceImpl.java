@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.species.dao.SpeciesDao;
 import com.species.entity.Species;
+import com.species.dao.SpeciesDao;
 
 @Service
 public class SpeciesServiceImpl implements SpeciesService {
@@ -20,7 +20,8 @@ public class SpeciesServiceImpl implements SpeciesService {
 	public Species createSpecies(Species species) {
 		
 		if(speciesDao.save(species) != null) {
-			return species;
+			Species createdSpecies = getSpeciesByName(species.getSpeciesName());
+			return createdSpecies;
 		} 
 		else {
 			return null;
