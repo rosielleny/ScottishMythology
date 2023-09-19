@@ -45,39 +45,39 @@ public class WeaknessController {
 	private BeingService beingService;
 	@Autowired
 	private BeingWeaknessService beingWeaknessService;
-	
+
 	// Model Attributes
-	
+
 	@ModelAttribute("weaknesses")
 	public List<String> getWeaknesses() {
 		// Getting all weaknesses
-	    List<Weakness> weaknesses = weaknessService.getAllWeakness(); 
-	    // Transforming the list of weaknesses into a list of weakness names
-	    return weaknesses.stream()
-	            .map(weakness -> weakness.getWeaknessName())
-	            .collect(Collectors.toList());
+		List<Weakness> weaknesses = weaknessService.getAllWeakness(); 
+		// Transforming the list of weaknesses into a list of weakness names
+		return weaknesses.stream()
+				.map(weakness -> weakness.getWeaknessName())
+				.collect(Collectors.toList());
 	}
-	
+
 	// A function to convert a list of Weaknesses into a list of GenericEntities
 	public List<GenericEntity> convertToGenericEntityList(List<Weakness> weaknessList){
-		
+
 		List<GenericEntity> entityList = new ArrayList<GenericEntity>();
 		// For each weakness in the list, pass the values into the GenericEntity constructor and add to the entity list
 		for(Weakness weakness: weaknessList) {
 			GenericEntity entity = new GenericEntity(weakness.getWeaknessPK(), weakness.getWeaknessName());
 			entityList.add(entity);
 		}
-		
+
 		return entityList;
 	}
-	
-	
+
+
 	// CREATE
-	
+
 	@CrossOrigin
 	@RequestMapping("/weakness/create")
 	public ModelAndView createAnWeakness() {
-		
+
 		ModelAndView modelAndView = new ModelAndView();
 		// Creating GenericEntity object
 		GenericEntity entity = new GenericEntity(0, "");
@@ -87,83 +87,92 @@ public class WeaknessController {
 		modelAndView.addObject("entities", getWeaknesses());
 		// Calling a function to set up all possible links required for the template
 		modelAndView = scottishMythologyService.setUpLinks("weakness", "weaknesses", modelAndView);
-		
+
 		modelAndView.setViewName("entity/create-entity");
-		
+
 		return modelAndView;
-		
+
 	}
 
-	
+
 	@CrossOrigin
 	@RequestMapping("/weakness/save-new")
 	public ModelAndView saveWeakness(@Valid @ModelAttribute("entity")GenericEntity entity, BindingResult results) {
-		
-		
+
+
 		ModelAndView modelAndView = new ModelAndView();
 		// If the input has errors it wont be submitted
 		if(results.hasErrors()) {
 			return new ModelAndView("entity/create-entity", "entity", entity);
 		}
-		
+
 		String message = null;
-		
-		if(entity != null) {
-			// If we have Entity we convert it back into Weakness
-			Weakness weakness = new Weakness();
-			weakness.setWeaknessName(entity.getEntityName());
-			// Then call the service to create it
-			weaknessService.createWeakness(weakness);
-			message = weakness.getWeaknessName() + " successfully added to the database.";
-			
-			Weakness createdWeakness = weaknessService.getWeaknessByName(weakness.getWeaknessName());
-			entity = new GenericEntity(createdWeakness.getWeaknessPK(), createdWeakness.getWeaknessName());
-		}
-		else {
+
+		try {
+			if(entity != null) {
+				// If we have Entity we convert it back into Weakness
+				Weakness weakness = new Weakness();
+				weakness.setWeaknessName(entity.getEntityName());
+				// Then call the service to create it
+				if(weaknessService.createWeakness(weakness) != null) {
+					message = weakness.getWeaknessName() + " successfully added to the database.";
+
+					Weakness createdWeakness = weaknessService.getWeaknessByName(weakness.getWeaknessName());
+					entity = new GenericEntity(createdWeakness.getWeaknessPK(), createdWeakness.getWeaknessName());
+				}
+				else {
+					message = "An error occurred. Weakness not added to the database.";
+				}
+			}
+			else {
+				message = "An error occurred. Weakness not added to the database.";
+			}
+		}catch(Exception e) {
 			message = "An error occurred. Weakness not added to the database.";
+
 		}
-		
+
 		// Adding the message
 		modelAndView.addObject("message", message);
 		// Adding all possible necessary links
 		modelAndView = scottishMythologyService.setUpLinks("weakness", "weaknesses", modelAndView);
 		modelAndView.addObject("entity", entity);
 		modelAndView.setViewName("entity/entity-output");
-		
+
 		return modelAndView;
 	}
-	
-	
+
+
 	// READ
 	// Functions as the main page, showing all entities and offering a search bar for individual entities at the top
 	@CrossOrigin
 	@RequestMapping("/weakness/weaknesses")
 	public ModelAndView showAllWeaknesses() {
-		
+
 		ModelAndView modelAndView = new ModelAndView();
-		
+
 		// Getting all weaknesses and converting the list to a list of GenericEntities
 		List<GenericEntity> entityList = convertToGenericEntityList(weaknessService.getAllWeakness());
-		
+
 		modelAndView.addObject("entityList", entityList);
 		// Adding all possible links
 		modelAndView = scottishMythologyService.setUpLinks("weakness", "weaknesses", modelAndView);
-	
+
 		modelAndView.setViewName("entity/show-all-entities");
-	
+
 		return modelAndView;
 	}
-	
+
 	@CrossOrigin
 	@RequestMapping("/weakness/search")
 	public ModelAndView searchWeaknessesByName(HttpServletRequest request) {
-		
+
 		ModelAndView modelAndView = new ModelAndView();
 		// Getting weakness by name
 		Weakness weakness = weaknessService.getWeaknessByName(request.getParameter("name"));
 		// Setting up all possible links
 		modelAndView = scottishMythologyService.setUpLinks("weakness", "weaknesses", modelAndView);
-		
+
 		if(weakness!=null) {
 			// If weakness was found, we convert to GenericEntity
 			GenericEntity entity = new GenericEntity(weakness.getWeaknessPK(), weakness.getWeaknessName());
@@ -171,48 +180,48 @@ public class WeaknessController {
 			modelAndView.setViewName("entity/show-entity");
 		}
 		else {
-			
+
 			Being being = beingService.getBeingByName(request.getParameter("name"));
-			
+
 			if(being !=null) {
-				
+
 				int id = being.getBeingPK();
 				List<BeingWeakness> beingWeaknesses = beingWeaknessService.getBeingWeaknessByBeingId(id);
 				List<Weakness> weaknessList = new ArrayList<Weakness>();
-				
+
 				for(BeingWeakness beingWeakness: beingWeaknesses) {
-					
+
 					KeyBeingWeakness key = beingWeakness.getId();
 					int weaknessKey = key.getWeaknessPK();
-					
+
 					Weakness foundWeakness = weaknessService.getWeaknessById(weaknessKey);
-					
+
 					weaknessList.add(foundWeakness);
 				}
-				
+
 				List<GenericEntity> entityList = convertToGenericEntityList(weaknessList);
-				
+
 				modelAndView.addObject("entityList", entityList);
 				modelAndView.addObject("message", "Weakness results for " + request.getParameter("name"));
 				modelAndView.setViewName("entity/show-entity");
 				return modelAndView;
 			}
 			else {
-			
+
 				modelAndView.addObject("message", "No weaknesses were found for " + request.getParameter("name"));
 				modelAndView.setViewName("entity/show-entity");
 			}
 		}
-		
+
 		return modelAndView;
 	}
-	
+
 	// UPDATE
-	
+
 	@CrossOrigin
 	@RequestMapping("/weakness/edit")
 	public ModelAndView editWeaknesses(@RequestParam int pk) {
-		
+
 		ModelAndView modelAndView = new ModelAndView();
 		// Getting weakness by Id
 		Weakness weakness = weaknessService.getWeaknessById(pk);
@@ -220,43 +229,43 @@ public class WeaknessController {
 		GenericEntity ogEntity = new GenericEntity(weakness.getWeaknessPK(), weakness.getWeaknessName());
 		// Creating a second store for the same entity
 		GenericEntity entity = new GenericEntity(ogEntity.getEntityPK(), ogEntity.getEntityName());
-		
+
 		// Adding the list of weakness names
 		modelAndView.addObject("entities", getWeaknesses());
-		
+
 		modelAndView.addObject("entity", entity);
 		// Adding all possible links
 		modelAndView = scottishMythologyService.setUpLinks("weakness", "weaknesses", modelAndView);
 		modelAndView.addObject("ogEntity", ogEntity);
 		modelAndView.setViewName("entity/edit-entity");
-		
-		
+
+
 		return modelAndView;
 	}
-	
+
 	@CrossOrigin
 	@RequestMapping("/weakness/save-edit")
 	public ModelAndView saveEdittedWeakness(@Valid @ModelAttribute("entity")GenericEntity entity, BindingResult results){
-		
-		
+
+
 		ModelAndView modelAndView = new ModelAndView();
-		
+
 		if(results.hasErrors()) {
 			return new ModelAndView("entity/edit-entity", "entity", entity);
 		}
-		
+
 		String message = null;
-		
+
 		if(entity != null) {
 			// Getting the original weakness by PK
 			Weakness weakness = weaknessService.getWeaknessById(entity.getEntityPK());
 			// Setting the name to the new name
 			weakness.setWeaknessName(entity.getEntityName());
-			
+
 			if(weaknessService.updateWeakness(weakness)) {
-				
+
 				message = weakness.getWeaknessName() + " successfully updated";
-				
+
 			}else {
 				message = "An error occurred. Weakness not updated. Backend";
 			}
@@ -264,7 +273,7 @@ public class WeaknessController {
 		else {
 			message = "An error occurred. Weakness not updated. Frontend";
 		}
-		
+
 		// Getting the new weakness by ID
 		Weakness newWeakness = weaknessService.getWeaknessById(entity.getEntityPK());
 		// Converting to GenericEntity
@@ -273,18 +282,18 @@ public class WeaknessController {
 		modelAndView.addObject("message", message);
 		// Adding all possible links to the mav
 		modelAndView = scottishMythologyService.setUpLinks("weakness", "weaknesses", modelAndView);
-		
+
 		modelAndView.setViewName("entity/entity-output");
-		
+
 		return modelAndView;
 	}
-	
+
 	// DELETE
-	
+
 	@CrossOrigin
 	@RequestMapping("/weakness/delete/{pk}")
 	public ModelAndView deleteWeaknesses(@PathVariable int pk) {
-		
+
 		ModelAndView modelAndView = new ModelAndView();
 		// Adding all possible links
 		modelAndView = scottishMythologyService.setUpLinks("weakness", "weaknesses", modelAndView);
@@ -292,34 +301,39 @@ public class WeaknessController {
 		Weakness weakness = weaknessService.getWeaknessById(pk);
 		// Converting to GenericEntity
 		GenericEntity entity = new GenericEntity(weakness.getWeaknessPK(), weakness.getWeaknessName());
-		
+
 		if(weaknessService.deleteWeakness(pk)) {
 			modelAndView.addObject("message", weakness.getWeaknessName() + " successfully deleted from Weaknesses.");
 		}else {
 			modelAndView.addObject("message", "Failed to delete " + weakness.getWeaknessName() + " from Weaknesses.");
 		}
-		
+
 		// Getting list of weaknesses as GenericEntity list
 		List<GenericEntity> entityList = convertToGenericEntityList(weaknessService.getAllWeakness());
-		
+
 		modelAndView.addObject("entity", entity);
 		modelAndView.addObject("entityList", entityList);
 		modelAndView.setViewName("entity/show-all-entities");
-		
+
 		return modelAndView;
 	}
-	
+
 	@PostMapping("weakness/add")
 	public ResponseEntity<Map<String, Boolean>> sneakyAddWeakness(@RequestBody Weakness weakness) {
 		Map<String, Boolean> response = new HashMap<>();
 		try {
-	        weaknessService.createWeakness(weakness);
-	        response.put("success", true);
-	        return ResponseEntity.ok(response);
-	    } catch (Exception e) {
-	        response.put("success", false);
-	        return ResponseEntity.badRequest().body(response);
-	    }
+			if( weaknessService.createWeakness(weakness) != null) {
+				response.put("success", true);
+				return ResponseEntity.ok(response);
+			}
+			else {
+				response.put("success", false);
+				return ResponseEntity.badRequest().body(response);
+			}
+		} catch (Exception e) {
+			response.put("success", false);
+			return ResponseEntity.badRequest().body(response);
+		}
 	}
-	
+
 }

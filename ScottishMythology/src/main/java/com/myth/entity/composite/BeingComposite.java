@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.Lob;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.myth.entity.Being;
 
@@ -13,9 +14,11 @@ public class BeingComposite {
 		
 	private int beingPK;
 	@NotNull
+	@Size(max = 20, min = 1)
 	private String beingName;
 	private int beingSpeciesPK;
 	@NotNull
+	@Size(max = 250, min = 1)
 	private String beingDescription;
 	private int beingGenderPK;
 	@Lob

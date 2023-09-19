@@ -189,6 +189,7 @@ public class ScottishMythologyController {
 
 		BeingComposite being = new BeingComposite();
 		// Adding it to the mav
+		modelAndView = scottishMythologyService.setUpLinks("being", "beings", modelAndView);
 		modelAndView.addObject("being", being);
 		// Getting the list of being names and adding to to the mav as "entities"
 		modelAndView.addObject("beings", getBeings());
@@ -201,7 +202,6 @@ public class ScottishMythologyController {
 		modelAndView.addObject("symbols", getSymbols());
 		modelAndView.addObject("weaknesses", getWeaknesses());
 		// Calling a function to set up all possible links required for the template
-		modelAndView = scottishMythologyService.setUpLinks("being", "beings", modelAndView);
 
 		modelAndView.setViewName("being/create-being");
 
@@ -216,6 +216,8 @@ public class ScottishMythologyController {
 
 
 		ModelAndView modelAndView = new ModelAndView();
+		modelAndView = scottishMythologyService.setUpLinks("being", "beings", modelAndView);
+
 		// If the input has errors it wont be submitted
 		if(results.hasErrors()) {
 			return new ModelAndView("being/create-being", "being", being);
@@ -223,23 +225,30 @@ public class ScottishMythologyController {
 
 		String message = null;
 
-		if(being != null) {
+		try {
+			
+			if(being != null) {
 
-			// Call the service to create it
-			if(scottishMythologyService.createBeingRecord(being) != null) {
-				message = being.getBeingName() + " successfully added to the database.";
-			}else {
-				message = "An backend error occurred. Being not added to the database.";
+				
+				// Call the service to create it
+				if(scottishMythologyService.createBeingRecord(being) != null) {
+					message = being.getBeingName() + " successfully added to the database.";
+				}else {
+					throw new RuntimeException("A backend error occurred. Being not added to the database.");
+					}
+			
 			}
-		}
-		else {
-			message = "An frontend error occurred. Being not added to the database.";
+			else {
+				message = "A frontend error occurred. Being not added to the database.";
+			}
+			
+		}catch(Exception e) {
+			message = "An error occurred. Being not added to the database.";
 		}
 
 		// Adding the message
 		modelAndView.addObject("message", message);
 		// Adding all possible necessary links
-		modelAndView = scottishMythologyService.setUpLinks("being", "beings", modelAndView);
 
 		modelAndView.setViewName("being/being-output");
 
@@ -258,9 +267,9 @@ public class ScottishMythologyController {
 		// Getting a list of BeingComposite objects
 		List<BeingComposite> beingList = scottishMythologyService.getAllBeingRecords();
 
-		modelAndView.addObject("beingList", beingList);
 		// Adding all possible links
 		modelAndView = scottishMythologyService.setUpLinks("being", "beings", modelAndView);
+		modelAndView.addObject("beingList", beingList);
 
 		modelAndView.setViewName("being/show-all-beings");
 
@@ -276,11 +285,12 @@ public class ScottishMythologyController {
 		Being beingBase = beingService.getBeingByName(request.getParameter("name"));
 		BeingComposite being = null;
 
+		modelAndView = scottishMythologyService.setUpLinks("being", "beings", modelAndView);
+
 		if(beingBase!=null) {
 			being = scottishMythologyService.getBeingRecordByName(request.getParameter("name"));
 		}
 		// Setting up all possible links
-		modelAndView = scottishMythologyService.setUpLinks("being", "beings", modelAndView);
 
 		if(being!=null) {
 			// If being was found
@@ -504,6 +514,10 @@ public class ScottishMythologyController {
 	public ModelAndView editBeings(@RequestParam int pk) {
 
 		ModelAndView modelAndView = new ModelAndView();
+		
+		// Adding all possible links
+		modelAndView = scottishMythologyService.setUpLinks("being", "beings", modelAndView);
+		
 		// Getting being by Id
 		BeingComposite ogBeing = scottishMythologyService.getBeingRecordById(pk);
 
@@ -514,8 +528,6 @@ public class ScottishMythologyController {
 		modelAndView.addObject("beings", getBeings());
 
 		modelAndView.addObject("being", being);
-		// Adding all possible links
-		modelAndView = scottishMythologyService.setUpLinks("being", "beings", modelAndView);
 		modelAndView.addObject("ogBeing", ogBeing);
 		modelAndView.setViewName("being/edit-being");
 

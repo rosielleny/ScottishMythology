@@ -46,7 +46,9 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 	@Autowired
 	BeingWeaknessService beingWeaknessService;
 	
+
 	
+	// CREATE
 	//@Transactional
 	@Override
 	public BeingComposite createBeingRecord(BeingComposite beingComposite) {
@@ -151,7 +153,7 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 	@Override 
 	public List<BeingComposite> getBeingRecordByGender(int genderPK){
 		
-		List<Being> beingList = beingService.getBeingByFaction(genderPK);
+		List<Being> beingList = beingService.getBeingByGender(genderPK);
 		List<BeingComposite> beingRecordList = new ArrayList<BeingComposite>();
 		
 		for(Being being: beingList) {
@@ -166,7 +168,7 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 	@Override 
 	public List<BeingComposite> getBeingRecordBySpecies(int speciesPK){
 		
-		List<Being> beingList = beingService.getBeingByFaction(speciesPK);
+		List<Being> beingList = beingService.getBeingBySpecies(speciesPK);
 		List<BeingComposite> beingRecordList = new ArrayList<BeingComposite>();
 		
 		for(Being being: beingList) {
@@ -180,7 +182,6 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 	}
 	
 	// UPDATE
-	
 	//@Transactional
 	@Override
 	public Boolean updateBeingRecord(BeingComposite beingComposite) {
@@ -392,6 +393,7 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 		return beingService.deleteBeing(beingPK);
 	}
 
+	// CONVERT
 	// Method used to convert Being to a BeingComposite objects
 	private BeingComposite convertToComposite(Being being) {
 
@@ -577,11 +579,18 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 				
 				if(beingAbilityService.getBeingAbilityById(key) == null && allAbilitiesCreatedSuccessfully) {
 					BeingAbility beingAbility = new BeingAbility(key);
-					beingAbilityService.createBeingAbility(beingAbility);
+					if(beingAbilityService.createBeingAbility(beingAbility) != null) {
+						allAbilitiesCreatedSuccessfully = true;
+					}
+					else {
+						allAbilitiesCreatedSuccessfully = false;
+					}
+				}
+				else if(beingAbilityService.getBeingAbilityById(key) != null) {
 					allAbilitiesCreatedSuccessfully = true;
 				}
 				
-				
+			
 			} else {
 				allAbilitiesCreatedSuccessfully = false;
 				System.out.println("There was a problem creating/updating BeingAbilities.");
@@ -606,7 +615,15 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 				
 				if(beingWeaknessService.getBeingWeaknessById(key) == null && allWeaknesssCreatedSuccessfully) {
 					BeingWeakness beingWeakness = new BeingWeakness(key);
-					beingWeaknessService.createBeingWeakness(beingWeakness);
+					
+					if(beingWeaknessService.createBeingWeakness(beingWeakness) != null) {
+						allWeaknesssCreatedSuccessfully = true;
+					}
+					else {
+						allWeaknesssCreatedSuccessfully = false;
+					}
+				}
+				else if(beingWeaknessService.getBeingWeaknessById(key) != null) {
 					allWeaknesssCreatedSuccessfully = true;
 				}
 				
@@ -636,7 +653,15 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 
 				if(beingSymbolismService.getBeingSymbolismById(key) == null && allSymbolsCreatedSuccessfully) {
 					BeingSymbolism beingSymbolism = new BeingSymbolism(key);
-					beingSymbolismService.createBeingSymbolism(beingSymbolism);
+					
+					if(beingSymbolismService.createBeingSymbolism(beingSymbolism) != null) {
+						allSymbolsCreatedSuccessfully = true;
+					}
+					else {
+						allSymbolsCreatedSuccessfully = false;					
+						}
+				}
+				else if(beingSymbolismService.getBeingSymbolismById(key) != null){
 					allSymbolsCreatedSuccessfully = true;
 				}
 				else {
@@ -666,10 +691,18 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 				
 				if(beingStoryService.getBeingStoryById(key) == null && allStorysCreatedSuccessfully) {
 					BeingStory beingStory = new BeingStory(key);
-					beingStoryService.createBeingStory(beingStory);
-					if(beingStoryService.getBeingStoryById(key) != null)
+					
+					if(beingStoryService.createBeingStory(beingStory) != null) {
 						allStorysCreatedSuccessfully = true;
 					}
+					else {
+						allStorysCreatedSuccessfully = false;
+					}
+				}
+				else if(beingStoryService.getBeingStoryById(key) != null) {
+					allStorysCreatedSuccessfully = true;
+				}
+				
 				else {
 					allStorysCreatedSuccessfully = false;
 					System.out.println("There was a problem creating/updating BeingStories.");
@@ -701,7 +734,15 @@ public class ScottishMythologyServiceImpl implements ScottishMythologyService {
 				
 				if(beingLocationService.getBeingLocationById(key) == null && allLocationsCreatedSuccessfully) {
 					BeingLocation beingLocation = new BeingLocation(key);
-					beingLocationService.createBeingLocation(beingLocation);
+					
+					if(beingLocationService.createBeingLocation(beingLocation) != null) {
+						allLocationsCreatedSuccessfully = true;
+					}
+					else {
+						allLocationsCreatedSuccessfully = false;
+					}
+				}
+				else if(beingLocationService.getBeingLocationById(key) != null) {
 					allLocationsCreatedSuccessfully = true;
 				}
 				

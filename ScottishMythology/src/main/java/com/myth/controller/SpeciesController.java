@@ -40,35 +40,35 @@ public class SpeciesController {
 	private ScottishMythologyService scottishMythologyService;
 	@Autowired
 	private BeingService beingService;
-	
+
 	// Model Attributes
-	
+
 	@ModelAttribute("species")
 	public List<String> getSpecies() {
 		// Getting all species
-	    List<Species> speciesList = speciesService.getAllSpecies();
-	    // Transforming the list of species into a list of species names
-	    return speciesList.stream()
-	            .map(species -> species.getSpeciesName())
-	            .collect(Collectors.toList());
+		List<Species> speciesList = speciesService.getAllSpecies();
+		// Transforming the list of species into a list of species names
+		return speciesList.stream()
+				.map(species -> species.getSpeciesName())
+				.collect(Collectors.toList());
 	}
-	
+
 	// A function to convert a list of Species into a list of GenericEntities
 	public List<GenericEntity> convertToGenericEntityList(List<Species> speciesList){
-		
+
 		List<GenericEntity> entityList = new ArrayList<GenericEntity>();
 		// For each species in the list, pass the values into the GenericEntity constructor and add to the entity list
 		for(Species species: speciesList) {
 			GenericEntity entity = new GenericEntity(species.getSpeciesPK(), species.getSpeciesName(), species.getSpeciesDescription());
 			entityList.add(entity);
 		}
-		
+
 		return entityList;
 	}
-	
-	
+
+
 	// CREATE
-	
+
 	@CrossOrigin
 	@RequestMapping("/species/create")
 	public ModelAndView createAnSpecies() {
@@ -82,40 +82,50 @@ public class SpeciesController {
 		modelAndView = scottishMythologyService.setUpLinks("species", "species", modelAndView);
 		// Calling a function to set up all possible links required for the template
 		modelAndView.setViewName("entity/create-entity");
-		
+
 		return modelAndView;
-		
+
 	}
 
-	
+
 	@CrossOrigin
 	@RequestMapping("/species/save-new")
 	public ModelAndView saveSpecies(@Valid @ModelAttribute("entity")GenericEntity entity, BindingResult results) {
-		
-		
+
+
 		ModelAndView modelAndView = new ModelAndView();
 		// If the input has errors it wont be submitted
 		if(results.hasErrors()) {
 			return new ModelAndView("entity/create-entity", "entity", entity);
 		}
-		
+
 		String message = null;
-		
-		if(entity != null) {
-			// If we have Entity we convert it back into Species
-			Species species = new Species();
-			species.setSpeciesName(entity.getEntityName());
-			species.setSpeciesDescription(entity.getEntityDescription());
-			// Then call the service to create it
-			speciesService.createSpecies(species);
-			message = species.getSpeciesName() + " successfully added to the database.";
-			
-			Species createdSpecies = speciesService.getSpeciesByName(species.getSpeciesName());
-			
-			entity = new GenericEntity(createdSpecies.getSpeciesPK(), createdSpecies.getSpeciesName(), createdSpecies.getSpeciesDescription());
+		try {
+			if(entity != null) {
+				// If we have Entity we convert it back into Species
+				Species species = new Species();
+				species.setSpeciesName(entity.getEntityName());
+				species.setSpeciesDescription(entity.getEntityDescription());
+				// Then call the service to create it
+				if(speciesService.createSpecies(species) != null) {
+					message = species.getSpeciesName() + " successfully added to the database.";
+
+					Species createdSpecies = speciesService.getSpeciesByName(species.getSpeciesName());
+
+					entity = new GenericEntity(createdSpecies.getSpeciesPK(), createdSpecies.getSpeciesName(), createdSpecies.getSpeciesDescription());
+				}
+				else {
+					message = "An error occurred. Species not added to the database.";
+
+				}
+			}
+			else {
+				message = "An error occurred. Species not added to the database.";
+			}
 		}
-		else {
+		catch(Exception e) {
 			message = "An error occurred. Species not added to the database.";
+
 		}
 		// Adding the message
 		modelAndView.addObject("message", message);
@@ -123,41 +133,41 @@ public class SpeciesController {
 		modelAndView = scottishMythologyService.setUpLinks("species", "species", modelAndView);
 		modelAndView.addObject("entity", entity);
 		modelAndView.setViewName("entity/entity-output");
-		
+
 		return modelAndView;
 	}
-	
-	
+
+
 	// READ
 	// Functions as the main page, showing all entities and offering a search bar for individual entities at the top
 	@CrossOrigin
 	@RequestMapping("/species/species")
 	public ModelAndView showAllSpecies() {
-		
+
 		ModelAndView modelAndView = new ModelAndView();
-		
+
 		// Getting all species and converting the list to a list of GenericEntities
 		List<GenericEntity> entityList = convertToGenericEntityList(speciesService.getAllSpecies());
-		
+
 		modelAndView.addObject("entityList", entityList);
 		// Adding all possible links
 		modelAndView = scottishMythologyService.setUpLinks("species", "species", modelAndView);
-	
+
 		modelAndView.setViewName("entity/show-all-entities");
-	
+
 		return modelAndView;
 	}
-	
+
 	@CrossOrigin
 	@RequestMapping("/species/search")
 	public ModelAndView searchSpeciesByName(HttpServletRequest request) {
-		
+
 		ModelAndView modelAndView = new ModelAndView();
 		// Getting species by name
 		Species species = speciesService.getSpeciesByName(request.getParameter("name"));
 		// Setting up all possible links
 		modelAndView = scottishMythologyService.setUpLinks("species", "species", modelAndView);
-		
+
 		if(species!=null) {
 			// If species was found, we convert to GenericEntity
 			GenericEntity entity = new GenericEntity(species.getSpeciesPK(), species.getSpeciesName(), species.getSpeciesDescription());
@@ -165,37 +175,37 @@ public class SpeciesController {
 			modelAndView.setViewName("entity/show-entity");
 		}
 		else {
-			
+
 			Being being = beingService.getBeingByName(request.getParameter("name"));
-			
+
 			if(being !=null) {
-				
+
 				int id = being.getBeingSpecies();
-	
+
 				Species speciesBeing = speciesService.getSpeciesById(id);
 				GenericEntity entity = new GenericEntity(speciesBeing.getSpeciesPK(), speciesBeing.getSpeciesName(), speciesBeing.getSpeciesDescription());
-				
+
 				modelAndView.addObject("entity", entity);
 				modelAndView.addObject("message", "Species results for " + request.getParameter("name"));
 				modelAndView.setViewName("entity/show-entity");
 				return modelAndView;
 			}
 			else {
-			
+
 				modelAndView.addObject("message", "No species were found for " + request.getParameter("name"));
 				modelAndView.setViewName("entity/show-entity");
 			}
 		}
-		
+
 		return modelAndView;
 	}
-	
+
 	// UPDATE
-	
+
 	@CrossOrigin
 	@RequestMapping("/species/edit")
 	public ModelAndView editSpecies(@RequestParam int pk) {
-		
+
 		ModelAndView modelAndView = new ModelAndView();
 		// Getting species by Id
 		Species species = speciesService.getSpeciesById(pk);
@@ -203,7 +213,7 @@ public class SpeciesController {
 		GenericEntity ogEntity = new GenericEntity(species.getSpeciesPK(), species.getSpeciesName(), species.getSpeciesDescription());
 		// Creating a second store for the same entity
 		GenericEntity entity = new GenericEntity(ogEntity.getEntityPK(), ogEntity.getEntityName(), ogEntity.getEntityDescription());
-		
+
 		// Adding the list of species names
 		modelAndView.addObject("entities", getSpecies());
 		// Adding all possible links
@@ -211,24 +221,24 @@ public class SpeciesController {
 		modelAndView = scottishMythologyService.setUpLinks("species", "species", modelAndView);
 		modelAndView.addObject("ogEntity", ogEntity);
 		modelAndView.setViewName("entity/edit-entity");
-		
-		
+
+
 		return modelAndView;
 	}
-	
+
 	@CrossOrigin
 	@RequestMapping("/species/save-edit")
 	public ModelAndView saveEdittedSpecies(@Valid @ModelAttribute("entity")GenericEntity entity, BindingResult results){
-		
-		
+
+
 		ModelAndView modelAndView = new ModelAndView();
-		
+
 		if(results.hasErrors()) {
 			return new ModelAndView("entity/edit-entity", "entity", entity);
 		}
-		
+
 		String message = null;
-		
+
 		if(entity != null) {
 			// Getting the original species by PK
 			Species species = speciesService.getSpeciesById(entity.getEntityPK());
@@ -237,7 +247,7 @@ public class SpeciesController {
 			// Setting the desc to the new desc
 			species.setSpeciesDescription(entity.getEntityDescription());
 			if(speciesService.updateSpecies(species)) {
-				
+
 				message = species.getSpeciesName() + " successfully updated";
 			}else {
 				message = "An error occurred. Species not updated. Backend";
@@ -254,18 +264,18 @@ public class SpeciesController {
 		modelAndView.addObject("message", message);
 		// Adding all possible links to the mav
 		modelAndView = scottishMythologyService.setUpLinks("species", "species", modelAndView);
-		
+
 		modelAndView.setViewName("entity/entity-output");
-		
+
 		return modelAndView;
 	}
-	
+
 	// DELETE
-	
+
 	@CrossOrigin
 	@RequestMapping("/species/delete/{pk}")
 	public ModelAndView deleteSpecies(@PathVariable int pk) {
-		
+
 		ModelAndView modelAndView = new ModelAndView();
 		// Adding all possible links
 		modelAndView = scottishMythologyService.setUpLinks("species", "species", modelAndView);
@@ -273,7 +283,7 @@ public class SpeciesController {
 		Species species = speciesService.getSpeciesById(pk);
 		// Converting to GenericEntity
 		GenericEntity entity = new GenericEntity(species.getSpeciesPK(), species.getSpeciesName(), species.getSpeciesDescription());
-		
+
 		if(speciesService.deleteSpecies(pk)) {
 			modelAndView.addObject("message", species.getSpeciesName() + " successfully deleted from Species.");
 		}else {
@@ -281,24 +291,29 @@ public class SpeciesController {
 		}
 		// Getting list of species as GenericEntity list
 		List<GenericEntity> entityList = convertToGenericEntityList(speciesService.getAllSpecies());
-		
+
 		modelAndView.addObject("entity", entity);
 		modelAndView.addObject("entityList", entityList);
 		modelAndView.setViewName("entity/show-all-entities");
-		
+
 		return modelAndView;
 	}
-	
+
 	@PostMapping("species/add")
 	public ResponseEntity<Map<String, Boolean>> sneakyAddSpecies(@RequestBody Species species) {
 		Map<String, Boolean> response = new HashMap<>();
 		try {
-	        speciesService.createSpecies(species);
-	        response.put("success", true);
-	        return ResponseEntity.ok(response);
-	    } catch (Exception e) {
-	        response.put("success", false);
-	        return ResponseEntity.badRequest().body(response);
-	    }
+			if(speciesService.createSpecies(species)!= null) {
+				response.put("success", true);
+				return ResponseEntity.ok(response);
+			}
+			else {
+				response.put("success", false);
+				return ResponseEntity.badRequest().body(response);
+			}
+		} catch (Exception e) {
+			response.put("success", false);
+			return ResponseEntity.badRequest().body(response);
+		}
 	}
 }

@@ -42,36 +42,36 @@ public class FactionController {
 	private ScottishMythologyService scottishMythologyService;
 	@Autowired
 	private BeingService beingService;
-	
-	
+
+
 	// Model Attributes
-	
+
 	@ModelAttribute("factions")
 	public List<String> getFactions() {
 		// Getting all factions
-	    List<Faction> factions = factionService.getAllFaction();
-	    // Transforming the list of factions into a list of faction names
-	    return factions.stream()
-	            .map(faction -> faction.getFactionName())
-	            .collect(Collectors.toList());
+		List<Faction> factions = factionService.getAllFaction();
+		// Transforming the list of factions into a list of faction names
+		return factions.stream()
+				.map(faction -> faction.getFactionName())
+				.collect(Collectors.toList());
 	}
-	
+
 	// A function to convert a list of Factions into a list of GenericEntities
 	public List<GenericEntity> convertToGenericEntityList(List<Faction> factionList){
-		
+
 		List<GenericEntity> entityList = new ArrayList<GenericEntity>();
 		// For each faction in the list, pass the values into the GenericEntity constructor and add to the entity list
 		for(Faction faction: factionList) {
 			GenericEntity entity = new GenericEntity(faction.getFactionPK(), faction.getFactionName(), faction.getFactionDescription());
 			entityList.add(entity);
 		}
-		
+
 		return entityList;
 	}
-	
-	
+
+
 	// CREATE
-	
+
 	@CrossOrigin
 	@RequestMapping("/faction/create")
 	public ModelAndView createAnFaction() {
@@ -85,39 +85,47 @@ public class FactionController {
 		modelAndView = scottishMythologyService.setUpLinks("faction", "factions", modelAndView);
 		// Calling a function to set up all possible links required for the template
 		modelAndView.setViewName("entity/create-entity");
-		
+
 		return modelAndView;
-		
+
 	}
 
-	
+
 	@CrossOrigin
 	@RequestMapping("/faction/save-new")
 	public ModelAndView saveFaction(@Valid @ModelAttribute("entity")GenericEntity entity, BindingResult results) {
-		
-		
+
+
 		ModelAndView modelAndView = new ModelAndView();
 		// If the input has errors it wont be submitted
 		if(results.hasErrors()) {
 			return new ModelAndView("entity/create-entity", "entity", entity);
 		}
-		
+
 		String message = null;
 		
-		if(entity != null) {
-			// If we have Entity we convert it back into Faction
-			Faction faction = new Faction();
-			faction.setFactionName(entity.getEntityName());
-			faction.setFactionDescription(entity.getEntityDescription());
-			// Then call the service to create it
-			factionService.createFaction(faction);
-			
-			Faction createdFaction = factionService.getFactionByName(faction.getFactionName());
-			entity = new GenericEntity(createdFaction.getFactionPK(), createdFaction.getFactionName(), createdFaction.getFactionDescription());
-			
-			message = faction.getFactionName() + " successfully added to the database.";
+		try {
+			if(entity != null) {
+				// If we have Entity we convert it back into Faction...
+				Faction faction = new Faction();
+				faction.setFactionName(entity.getEntityName());
+				faction.setFactionDescription(entity.getEntityDescription());
+				// ...then call the service to create it
+
+				if(factionService.createFaction(faction) != null) {
+					Faction createdFaction = factionService.getFactionByName(faction.getFactionName());
+					entity = new GenericEntity(createdFaction.getFactionPK(), createdFaction.getFactionName(), createdFaction.getFactionDescription());
+
+					message = faction.getFactionName() + " successfully added to the database.";
+				}else {
+					message = "An error occurred. Faction not added to the database.";
+				}
+			}
+			else {
+				message = "An error occurred. Faction not added to the database.";
+			}
 		}
-		else {
+		catch(Exception e) {
 			message = "An error occurred. Faction not added to the database.";
 		}
 		// Adding the message
@@ -126,41 +134,41 @@ public class FactionController {
 		modelAndView = scottishMythologyService.setUpLinks("faction", "factions", modelAndView);
 		modelAndView.addObject("entity", entity);
 		modelAndView.setViewName("entity/entity-output");
-		
+
 		return modelAndView;
 	}
-	
-	
+
+
 	// READ
 	// Functions as the main page, showing all entities and offering a search bar for individual entities at the top
 	@CrossOrigin
 	@RequestMapping("/faction/factions")
 	public ModelAndView showAllFactions() {
-		
+
 		ModelAndView modelAndView = new ModelAndView();
-		
+
 		// Getting all factions and converting the list to a list of GenericEntities
 		List<GenericEntity> entityList = convertToGenericEntityList(factionService.getAllFaction());
-		
+
 		modelAndView.addObject("entityList", entityList);
 		// Adding all possible links
 		modelAndView = scottishMythologyService.setUpLinks("faction", "factions", modelAndView);
-	
+
 		modelAndView.setViewName("entity/show-all-entities");
-	
+
 		return modelAndView;
 	}
-	
+
 	@CrossOrigin
 	@RequestMapping("/faction/search")
 	public ModelAndView searchFactionsByName(HttpServletRequest request) {
-		
+
 		ModelAndView modelAndView = new ModelAndView();
 		// Getting faction by name
 		Faction faction = factionService.getFactionByName(request.getParameter("name"));
 		// Setting up all possible links
 		modelAndView = scottishMythologyService.setUpLinks("faction", "factions", modelAndView);
-		
+
 		if(faction!=null) {
 			// If faction was found, we convert to GenericEntity
 			GenericEntity entity = new GenericEntity(faction.getFactionPK(), faction.getFactionName(), faction.getFactionDescription());
@@ -168,38 +176,38 @@ public class FactionController {
 			modelAndView.setViewName("entity/show-entity");
 		}
 		else {
-			
+
 			Being being = beingService.getBeingByName(request.getParameter("name"));
-			
+
 			if(being !=null) {
-				
+
 				int id = being.getBeingFaction();
-	
+
 				Faction factionBeing = factionService.getFactionById(id);
 				GenericEntity entity = new GenericEntity(factionBeing.getFactionPK(), factionBeing.getFactionName(), factionBeing.getFactionDescription());
-				
+
 				modelAndView.addObject("entity", entity);
 				modelAndView.addObject("message", "Faction results for " + request.getParameter("name"));
 				modelAndView.setViewName("entity/show-entity");
 				return modelAndView;
 			}
 			else {
-			
+
 				modelAndView.addObject("entity", null);
 				modelAndView.addObject("message", "No factions were found for " + request.getParameter("name"));
 				modelAndView.setViewName("entity/show-entity");
 			}
 		}	
-		
+
 		return modelAndView;
 	}
-	
+
 	// UPDATE
-	
+
 	@CrossOrigin
 	@RequestMapping("/faction/edit")
 	public ModelAndView editFactions(@RequestParam int pk) {
-		
+
 		ModelAndView modelAndView = new ModelAndView();
 		// Getting faction by Id
 		Faction faction = factionService.getFactionById(pk);
@@ -207,7 +215,7 @@ public class FactionController {
 		GenericEntity ogEntity = new GenericEntity(faction.getFactionPK(), faction.getFactionName(), faction.getFactionDescription());
 		// Creating a second store for the same entity
 		GenericEntity entity = new GenericEntity(ogEntity.getEntityPK(), ogEntity.getEntityName(), ogEntity.getEntityDescription());
-		
+
 		// Adding the list of faction names
 		modelAndView.addObject("entities", getFactions());
 		// Adding all possible links
@@ -215,24 +223,24 @@ public class FactionController {
 		modelAndView = scottishMythologyService.setUpLinks("faction", "factions", modelAndView);
 		modelAndView.addObject("ogEntity", ogEntity);
 		modelAndView.setViewName("entity/edit-entity");
-		
-		
+
+
 		return modelAndView;
 	}
-	
+
 	@CrossOrigin
 	@RequestMapping("/faction/save-edit")
 	public ModelAndView saveEdittedFaction(@Valid @ModelAttribute("entity")GenericEntity entity, BindingResult results){
-		
-		
+
+
 		ModelAndView modelAndView = new ModelAndView();
-		
+
 		if(results.hasErrors()) {
 			return new ModelAndView("entity/edit-entity", "entity", entity);
 		}
-		
+
 		String message = null;
-		
+
 		if(entity != null) {
 			// Getting the original faction by PK
 			Faction faction = factionService.getFactionById(entity.getEntityPK());
@@ -241,7 +249,7 @@ public class FactionController {
 			// Setting the description to the new description
 			faction.setFactionDescription(entity.getEntityDescription());
 			if(factionService.updateFaction(faction)) {
-				
+
 				message = faction.getFactionName() + " successfully updated";
 			}else {
 				message = "An error occurred. Faction not updated. Backend";
@@ -258,18 +266,18 @@ public class FactionController {
 		modelAndView.addObject("message", message);
 		// Adding all possible links to the mav
 		modelAndView = scottishMythologyService.setUpLinks("faction", "factions", modelAndView);
-		
+
 		modelAndView.setViewName("entity/entity-output");
-		
+
 		return modelAndView;
 	}
-	
+
 	// DELETE
-	
+
 	@CrossOrigin
 	@RequestMapping("/faction/delete/{pk}")
 	public ModelAndView deleteFactions(@PathVariable int pk) {
-		
+
 		ModelAndView modelAndView = new ModelAndView();
 		// Adding all possible links
 		modelAndView = scottishMythologyService.setUpLinks("faction", "factions", modelAndView);
@@ -277,7 +285,7 @@ public class FactionController {
 		Faction faction = factionService.getFactionById(pk);
 		// Converting to GenericEntity
 		GenericEntity entity = new GenericEntity(faction.getFactionPK(), faction.getFactionName(), faction.getFactionDescription());
-		
+
 		if(factionService.deleteFaction(pk)) {
 			modelAndView.addObject("message", faction.getFactionName() + " successfully deleted from Factions.");
 		}else {
@@ -285,24 +293,29 @@ public class FactionController {
 		}
 		// Getting list of factions as GenericEntity list
 		List<GenericEntity> entityList = convertToGenericEntityList(factionService.getAllFaction());
-		
+
 		modelAndView.addObject("entity", entity);
 		modelAndView.addObject("entityList", entityList);
 		modelAndView.setViewName("entity/show-all-entities");
-		
+
 		return modelAndView;
 	}
-	
+
 	@PostMapping("faction/add")
 	public ResponseEntity<Map<String, Boolean>> sneakyAddFaction(@RequestBody Faction faction) {
 		Map<String, Boolean> response = new HashMap<>();
 		try {
-	        factionService.createFaction(faction);
-	        response.put("success", true);
-	        return ResponseEntity.ok(response);
-	    } catch (Exception e) {
-	        response.put("success", false);
-	        return ResponseEntity.badRequest().body(response);
-	    }
+			if(factionService.createFaction(faction) !=null) {
+				response.put("success", true);
+				return ResponseEntity.ok(response);
+			}
+			else {
+				response.put("success", false);
+				return ResponseEntity.badRequest().body(response);
+			}
+		} catch (Exception e) {
+			response.put("success", false);
+			return ResponseEntity.badRequest().body(response);
+		}
 	}
 }

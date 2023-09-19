@@ -20,7 +20,7 @@ public class BeingServiceImpl implements BeingService {
 	public Being createBeing(Being being) {
 
 		if(beingDao.save(being) != null) {
-			return being;
+			return getBeingByName(being.getBeingName());
 		} 
 		else {
 			return null;

@@ -1,5 +1,6 @@
 package com.myth.entity.composite;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -9,7 +10,8 @@ public class GenericEntity {
 	// In this way, code for GenericEntity can be written once and used for any entity type as long as it is passed through generic entity once
 	private int entityPK;
 	@NotNull
-	@Size(max = 20)
+	@Size(max = 20, min = 1)
+	@NotBlank
 	private String entityName;
 	@Size(max = 255)
 	private String entityDescription;

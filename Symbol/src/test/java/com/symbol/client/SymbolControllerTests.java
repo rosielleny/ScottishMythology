@@ -49,7 +49,7 @@ class SymbolControllerTests {
 	// Controller Tests
 	
     @Test
-    @DisplayName("GET /symbol/all-symbol success")
+    @DisplayName("GET /symbol/all-symbol success") 
     void testGetSymbolsSuccess() throws Exception {
         // Setup our mocked service
         Symbol symbol1 = new Symbol(1, "Symbol Name");

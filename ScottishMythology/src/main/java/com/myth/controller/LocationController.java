@@ -105,20 +105,26 @@ public class LocationController {
 		}
 
 		String message = null;
+		try {
+			if(entity != null) {
+				// If we have Entity we convert it back into Location
+				Location location = new Location();
+				location.setLocationName(entity.getEntityName());
+				location.setLocationDescription(entity.getEntityDescription());
+				// Then call the service to create it
+				if(locationService.createLocation(location) != null) {
+					message = location.getLocationName() + " successfully added to the database.";
 
-		if(entity != null) {
-			// If we have Entity we convert it back into Location
-			Location location = new Location();
-			location.setLocationName(entity.getEntityName());
-			location.setLocationDescription(entity.getEntityDescription());
-			// Then call the service to create it
-			locationService.createLocation(location);
-			message = location.getLocationName() + " successfully added to the database.";
-			
-			Location createdLocation = locationService.getLocationByName(location.getLocationName());
-			entity = new GenericEntity(createdLocation.getLocationPK(), createdLocation.getLocationName(), createdLocation.getLocationDescription());
-		}
-		else {
+					Location createdLocation = locationService.getLocationByName(location.getLocationName());
+					entity = new GenericEntity(createdLocation.getLocationPK(), createdLocation.getLocationName(), createdLocation.getLocationDescription());
+				}
+				else {
+					message = "An error occurred. Location not added to the database.";
+				}
+			}else {
+				message = "An error occurred. Location not added to the database.";
+			}
+		}catch(Exception e) {
 			message = "An error occurred. Location not added to the database.";
 		}
 		// Adding the message
@@ -171,32 +177,32 @@ public class LocationController {
 		else {
 
 			Being being = beingService.getBeingByName(request.getParameter("name"));
-			
+
 			if(being !=null) {
-				
+
 				int id = being.getBeingPK();
 				List<BeingLocation> beingLocations = beingLocationService.getBeingLocationByBeingId(id);
 				List<Location> locationList = new ArrayList<Location>();
-				
+
 				for(BeingLocation beingLocation: beingLocations) {
-					
+
 					KeyBeingLocation key = beingLocation.getId();
 					int locationKey = key.getLocationPK();
-					
+
 					Location foundLocation = locationService.getLocationById(locationKey);
-					
+
 					locationList.add(foundLocation);
 				}
-				
+
 				List<GenericEntity> entityList = convertToGenericEntityList(locationList);
-				
+
 				modelAndView.addObject("entityList", entityList);
 				modelAndView.addObject("message", "Location results for " + request.getParameter("name"));
 				modelAndView.setViewName("entity/show-entity");
 				return modelAndView;
 			}
 			else {
-			
+
 				modelAndView.addObject("message", "No locations were found for " + request.getParameter("name"));
 				modelAndView.setViewName("entity/show-entity");
 			}
@@ -304,17 +310,23 @@ public class LocationController {
 		return modelAndView;
 
 	}
-	
+
 	@PostMapping("location/add")
 	public ResponseEntity<Map<String, Boolean>> sneakyAddLocation(@RequestBody Location location) {
 		Map<String, Boolean> response = new HashMap<>();
 		try {
-	        locationService.createLocation(location);
-	        response.put("success", true);
-	        return ResponseEntity.ok(response);
-	    } catch (Exception e) {
-	        response.put("success", false);
-	        return ResponseEntity.badRequest().body(response);
-	    }
+
+			if(locationService.createLocation(location) != null) {
+				response.put("success", true);
+				return ResponseEntity.ok(response);
+			}
+			else {
+				response.put("success", false);
+				return ResponseEntity.badRequest().body(response);
+			}
+		} catch (Exception e) {
+			response.put("success", false);
+			return ResponseEntity.badRequest().body(response);
+		}
 	}
 }

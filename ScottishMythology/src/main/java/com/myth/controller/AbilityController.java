@@ -106,21 +106,30 @@ public class AbilityController {
 			return new ModelAndView("entity/create-entity", "entity", entity);
 		}
 		
+		
 		String message = null;
 		
-		if(entity != null) {
-			// If we have Entity we convert it back into Ability
-			Ability ability = new Ability();
-			ability.setAbilityName(entity.getEntityName());
-			// Then call the service to create it
-			abilityService.createAbility(ability);
-			message = ability.getAbilityName() + " successfully added to the database.";
-			
-			Ability createdAbility = abilityService.getAbilityByName(ability.getAbilityName());
-			entity = new GenericEntity(createdAbility.getAbilityPK(), createdAbility.getAbilityName());
-			
+		try {
+			if(entity != null) {
+				// If we have Entity we convert it back into Ability
+				Ability ability = new Ability();
+				ability.setAbilityName(entity.getEntityName());
+				// Then call the service to create it
+				if(abilityService.createAbility(ability) != null) {
+					message = ability.getAbilityName() + " successfully added to the database.";
+
+					Ability createdAbility = abilityService.getAbilityByName(ability.getAbilityName());
+					entity = new GenericEntity(createdAbility.getAbilityPK(), createdAbility.getAbilityName());
+				}
+				else {
+					message = "An error occurred. Faction not added to the database.";
+				}
+			}
+			else {
+				message = "An error occurred. Ability not added to the database.";
+			}
 		}
-		else {
+		catch(Exception e) {
 			message = "An error occurred. Ability not added to the database.";
 		}
 		
@@ -311,15 +320,19 @@ public class AbilityController {
 	}
 	
 	// EXTRA
-	
 	// An add ability function used when a user needs to create a new ability while in the middle of another action
 	@PostMapping("ability/add")
 	public ResponseEntity<Map<String, Boolean>> sneakyAddAbility(@RequestBody Ability ability) {
 		Map<String, Boolean> response = new HashMap<>();
 		try {
-	        abilityService.createAbility(ability);
-	        response.put("success", true);
-	        return ResponseEntity.ok(response);
+			if(abilityService.createAbility(ability) !=null) {
+				response.put("success", true);
+				return ResponseEntity.ok(response);
+			}
+			else {
+				response.put("success", false);
+		        return ResponseEntity.badRequest().body(response);
+			}
 	    } catch (Exception e) {
 	        response.put("success", false);
 	        return ResponseEntity.badRequest().body(response);
